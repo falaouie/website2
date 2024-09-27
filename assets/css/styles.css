@@ -1,0 +1,182 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Login Page Styles */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.attendance-btn {
+  align-self: flex-start;
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-bottom: 10px;
+}
+
+.date-display {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-container {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 30px;
+  width: 300px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 20px;
+  max-width: 100%;
+  height: auto;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.login-container label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.login-container button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-container button[type="submit"]:hover {
+  background-color: #555;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-greeting {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.branch-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.branch-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  background-color: #17a2b8; /* Default blue color */
+}
+
+.branch-btn.active {
+  background-color: #28a745; /* Green color for active branch */
+}
+
+.logout-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  background-color: #dc3545;
+  text-decoration: none;
+}
+
+.dashboard-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.dashboard-btn {
+  background-color: #17a2b8;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 20px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%; /* This ensures the button takes full width of its grid cell */
+  max-width: 250px; /* Adjust this value to set the maximum width of the buttons */
+  margin: 0 auto; /* This centers the button if it's narrower than its grid cell */
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-items: center; /* This centers the buttons in their grid cells */
+}
+
+/* Footer Styles */
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  margin-top: 20px;
+}
