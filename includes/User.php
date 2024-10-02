@@ -102,11 +102,20 @@ class User {
         return $stmt->execute();
     }
 
-    public function logActivity($userId, $action) {
-        $query = "INSERT INTO user_activity_log (user_id, action, timestamp) VALUES (:user_id, :action, NOW())";
+    public function logLogin($staffId) {
+        $query = "INSERT INTO user_login_log (staff_id, login_time) VALUES (:staff_id, NOW())";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $userId);
-        $stmt->bindParam(':action', $action);
+        $stmt->bindParam(':staff_id', $staffId);
+        $stmt->execute();
+        return $this->conn->lastInsertId();
+    }
+
+    public function logLogout($staffId) {
+        $query = "UPDATE user_login_log SET logout_time = NOW() 
+                  WHERE staff_id = :staff_id AND logout_time IS NULL 
+                  ORDER BY login_time DESC LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':staff_id', $staffId);
         return $stmt->execute();
     }
 }

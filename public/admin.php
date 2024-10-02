@@ -2,6 +2,7 @@
 session_start();
 require_once '../includes/functions.php';
 require_once '../includes/User.php';
+require_once '../includes/db.php';
 requireLogin();
 
 $user = new User(getDbConnection());
@@ -11,7 +12,7 @@ if (!in_array('admin', $roles)) {
     redirectTo('dashboard.php');
 }
 
-// Admin functionality will be added here
+$username = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
@@ -25,22 +26,18 @@ if (!in_array('admin', $roles)) {
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>Admin Panel</h1>
-            <nav>
-                <ul>
-                    <li><a href="dashboard.php">Dashboard</a></li>
-                    <li><a href="logout.php">Logout</a></li>
-                </ul>
-            </nav>
+            <div class="user-greeting"><a href="dashboard.php" class="btn btn-primary">DASHBOARD</a></div>
+            <div class="branch-buttons">
+                <!-- Add branch buttons here if needed -->
+            </div>
+            <a href="logout.php" class="btn btn-danger">LOGOUT</a>
         </header>
-        <main>
-            <h2>Admin Functions</h2>
-            <!-- Admin functions will be added here -->
-            <ul>
-                <li><a href="#" id="manage-users">Manage Users</a></li>
-                <li><a href="#" id="system-settings">System Settings</a></li>
-            </ul>
-        </main>
+        <h1 class="dashboard-title">ADMIN PANEL</h1>
+        <div class="btn-grid">
+            <a href="#" id="manage-users" class="btn btn-primary">Manage Users</a>
+            <a href="#" id="system-settings" class="btn btn-primary">System Settings</a>
+            <!-- Add more admin functions as needed -->
+        </div>
     </div>
     <footer>
         <p>&copy; Copyright 2023 Silver System</p>

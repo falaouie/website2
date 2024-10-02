@@ -23,22 +23,22 @@ $username = $_SESSION['username'];
                 <button class="branch-btn active">Main Branch</button>
                 <button class="branch-btn">Oloa Branch</button>
             </div>
-            <a href="logout.php" class="logout-btn">LOGOUT</a>
+            <a href="logout.php" class="btn btn-danger">LOGOUT</a>
         </header>
-        <h1 class="dashboard-title">DASHBOARD</h1>
-        <div class="dashboard-grid">
-            <button class="dashboard-btn">SALES & ORDERS</button>
-            <button class="dashboard-btn">PAYMENTS & CREDITS</button>
-            <button class="dashboard-btn">PREVIOUS INVOICES</button>
-            <button class="dashboard-btn">LABELS</button>
-            <button class="dashboard-btn">KITCHEN</button>
-            <button class="dashboard-btn">ATTENDANCE</button>
-            <button class="dashboard-btn">PRODUCTS</button>
-            <button class="dashboard-btn">PURCHASES & EXPENSES</button>
-            <button class="dashboard-btn">STATEMENTS</button>
-            <button class="dashboard-btn">CUSTOMERS</button>
-            <button class="dashboard-btn">ADMIN</button>
-            <button class="dashboard-btn">BACK OFFICE</button>
+        <h1 class="dashboard-title">MAIN DASHBOARD</h1>
+        <div class="btn-grid">
+            <a href="#" class="btn btn-primary">SALES & ORDERS</a>
+            <a href="#" class="btn btn-primary">PAYMENTS & CREDITS</a>
+            <a href="#" class="btn btn-primary">PREVIOUS INVOICES</a>
+            <a href="#" class="btn btn-primary">LABELS</a>
+            <a href="#" class="btn btn-primary">KITCHEN</a>
+            <a href="#" class="btn btn-primary">ATTENDANCE</a>
+            <a href="#" class="btn btn-primary">PRODUCTS</a>
+            <a href="#" class="btn btn-primary">PURCHASES & EXPENSES</a>
+            <a href="#" class="btn btn-primary">STATEMENTS</a>
+            <a href="#" class="btn btn-primary">CUSTOMERS</a>
+            <a href="admin.php" class="btn btn-primary">ADMIN</a>
+            <a href="#" class="btn btn-primary">BACK OFFICE</a>
         </div>
     </div>
     <script src="../assets/js/app.js"></script>

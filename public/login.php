@@ -17,8 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $loginResult = loginUser($username, $password);
 
         if ($loginResult === true) {
-            // Log the login activity
-            $user->logActivity($_SESSION['user_id'], 'login');
+            // Log the login
+            $logId = $user->logLogin($_SESSION['user_id']);
+            $_SESSION['login_log_id'] = $logId;
             
             if ($user->isPasswordReset($username)) {
                 $_SESSION['reset_user'] = $username;

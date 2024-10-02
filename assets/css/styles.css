@@ -28,7 +28,6 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  align-self: flex-start;
   margin-bottom: 10px;
 }
 
@@ -93,7 +92,7 @@ body {
   margin-bottom: 10px;
 }
 
-/* Dashboard Styles */
+/* Dashboard and Admin Styles */
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -117,60 +116,65 @@ header {
   gap: 10px;
 }
 
-.branch-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  background-color: #17a2b8; /* Default blue color */
-}
-
-.branch-btn.active {
-  background-color: #28a745; /* Green color for active branch */
-}
-
-.logout-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  background-color: #dc3545;
-  text-decoration: none;
-}
-
 .dashboard-title {
   text-align: center;
   margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.dashboard-btn {
-  background-color: #17a2b8;
+/* Unified Button Styles */
+.btn {
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  color: white;
-  padding: 20px;
-  font-size: 16px;
-  text-align: center;
+  color: white !important; /* Ensure text is always white */
   cursor: pointer;
+  text-decoration: none;
+  font-size: 16px;
   transition: background-color 0.3s;
-  width: 100%; /* This ensures the button takes full width of its grid cell */
-  max-width: 250px; /* Adjust this value to set the maximum width of the buttons */
-  margin: 0 auto; /* This centers the button if it's narrower than its grid cell */
+  display: inline-block; /* Ensure proper sizing */
 }
 
-.dashboard-grid {
+.btn-primary {
+  background-color: #17a2b8;
+}
+
+.btn-primary:hover {
+  background-color: #138496;
+}
+
+.btn-success {
+  background-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  justify-items: center; /* This centers the buttons in their grid cells */
+  gap: 30px;
+}
+
+.btn-grid .btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  font-size: 16px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Footer Styles */
