@@ -9,6 +9,9 @@ if (!isAdmin()) {
     redirectTo('dashboard.php');
 }
 
+$user = new User(getDbConnection());
+$adminFirstName = $user->getAdminFirstName();
+
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +25,7 @@ if (!isAdmin()) {
 <body>
     <div class="dashboard-container">
         <header>
-            <div class="user-greeting">Admin Panel</div>
+            <div class="user-greeting">Hi <?php echo htmlspecialchars($adminFirstName); ?></div>
             <a href="logout.php" class="btn btn-danger">LOGOUT</a>
         </header>
         <h1 class="dashboard-title">ADMIN DASHBOARD</h1>

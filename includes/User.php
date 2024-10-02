@@ -111,8 +111,10 @@ class User {
         $staffId = $result['staff_id'] ?? null;
 
         // Now log the logout
-        $query = "UPDATE user_login_log SET logout_time = NOW() 
-                  WHERE staff_id = :staff_id AND logout_time IS NULL 
+        $query = "UPDATE user_login_log 
+                  SET logout_time = NOW() 
+                  WHERE (staff_id = :staff_id OR (:staff_id IS NULL AND staff_id IS NULL))
+                  AND logout_time IS NULL 
                   ORDER BY login_time DESC LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':staff_id', $staffId, PDO::PARAM_INT);
@@ -155,5 +157,12 @@ class User {
             $this->conn->rollBack();
             return "Error creating admin user: " . $e->getMessage();
         }
+    }
+
+    public function getAdminFirstName() {
+        $query = "SELECT first_name FROM admin_tbl LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchColumn();
     }
 }

@@ -3,7 +3,6 @@ session_start();
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 require_once '../includes/User.php';
-include_once '../includes/db.php';
 
 $error = '';
 
@@ -47,8 +46,7 @@ $csrf_token = generateCSRFToken();
 </head>
 <body>
     <div class="container login-page">
-        <button class="attendance-btn">ATTENDANCE</button>
-        <div class="date-display"></div>
+        <div class="login-date-display"></div>
         <div class="login-container">
             <img src="../assets/img/silver_system_logo.png" alt="Silver System Logo" class="logo">
             <form action="login.php" method="post">
