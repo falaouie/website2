@@ -11,7 +11,6 @@ if (!isAdmin()) {
 
 $user = new User(getDbConnection());
 $adminFirstName = $user->getAdminFirstName();
-
 ?>
 
 <!DOCTYPE html>
@@ -30,9 +29,9 @@ $adminFirstName = $user->getAdminFirstName();
         </header>
         <h1 class="dashboard-title">ADMIN DASHBOARD</h1>
         <div class="btn-grid">
-            <a href="#" class="btn btn-primary">Manage Staff</a>
+            <a href="manage_staff.php" class="btn btn-primary">Manage Staff</a>
+            <a href="manage_users.php" class="btn btn-primary">Manage Users</a>
             <a href="#" class="btn btn-primary">Manage Titles</a>
-            <a href="#" class="btn btn-primary">Reset Passwords</a>
             <a href="#" class="btn btn-primary">View Logs</a>
         </div>
     </div>

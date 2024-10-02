@@ -44,15 +44,30 @@ class User {
         return true;
     }
 
-    public function resetPassword($username) {
-        $query = "UPDATE users_tbl SET password = :password, password_reset = 1 WHERE username = :username";
-        $hashedPassword = password_hash($username, PASSWORD_DEFAULT);
-        
+    public function resetPassword($userId) {
+        $query = "SELECT username FROM users_tbl WHERE id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user) {
+            return "User not found.";
+        }
+
+        $newPassword = $user['username']; // Set password to username
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $query = "UPDATE users_tbl SET password = :password, password_reset = 1 WHERE id = :user_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':password', $hashedPassword);
-        $stmt->bindParam(':username', $username);
-        
-        return $stmt->execute();
+        $stmt->bindParam(':user_id', $userId);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return "Error resetting password: " . implode(", ", $stmt->errorInfo());
+        }
     }
 
     public function isPasswordReset($username) {
@@ -161,5 +176,163 @@ class User {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+
+    public function getAllUsers() {
+        $query = "SELECT u.*, s.first_name, s.last_name 
+                  FROM users_tbl u 
+                  LEFT JOIN staff_tbl s ON u.staff_id = s.staff_id 
+                  ORDER BY u.username";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getUserById($userId) {
+        $query = "SELECT u.*, s.first_name, s.last_name 
+                  FROM users_tbl u
+                  LEFT JOIN staff_tbl s ON u.staff_id = s.staff_id
+                  WHERE u.id = :user_id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getStaffWithoutUsers() {
+        $query = "SELECT s.* 
+                  FROM staff_tbl s
+                  LEFT JOIN users_tbl u ON s.staff_id = u.staff_id
+                  WHERE u.id IS NULL
+                  ORDER BY s.last_name, s.first_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function editUser($data) {
+        $query = "UPDATE users_tbl SET 
+                  username = :username,
+                  staff_id = :staff_id
+                  WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
+        $stmt->bindParam(':username', $data['username']);
+        $stmt->bindParam(':staff_id', $data['staff_id'], PDO::PARAM_INT);
+        
+        try {
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            return "Error updating user: " . $e->getMessage();
+        }
+    }
+
+    public function getAllStaff() {
+        $query = "SELECT s.*, t.title_name FROM staff_tbl s
+                  JOIN titles_tbl t ON s.title_id = t.title_id
+                  ORDER BY s.last_name, s.first_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getStaffById($staffId) {
+        $query = "SELECT s.*, t.title_name 
+                  FROM staff_tbl s
+                  JOIN titles_tbl t ON s.title_id = t.title_id
+                  WHERE s.staff_id = :staff_id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':staff_id', $staffId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllTitles() {
+        $query = "SELECT * FROM titles_tbl ORDER BY title_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function addUser($data) {
+        $username = $data['username'];
+        $password = password_hash($username, PASSWORD_DEFAULT); // Set initial password as username
+        $staffId = $data['staff_id'] ?: null;
+    
+        $query = "INSERT INTO users_tbl (username, password, staff_id, password_reset) VALUES (:username, :password, :staff_id, 1)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':staff_id', $staffId);
+    
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return "Error adding user: " . implode(", ", $stmt->errorInfo());
+        }
+    }
+
+    public function addStaff($data) {
+        $query = "INSERT INTO staff_tbl (title_id, first_name, last_name, status, attendance_req, joining_date, phone_number, email_address) 
+                  VALUES (:title_id, :first_name, :last_name, :status, :attendance_req, :joining_date, :phone_number, :email_address)";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(':title_id', $data['title_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':first_name', $data['first_name']);
+        $stmt->bindParam(':last_name', $data['last_name']);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_INT);
+        $stmt->bindParam(':attendance_req', $data['attendance_req'], PDO::PARAM_INT);
+        $stmt->bindParam(':joining_date', $data['joining_date']);
+        $stmt->bindParam(':phone_number', $data['phone_number']);
+        $stmt->bindParam(':email_address', $data['email_address']);
+        
+        try {
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            return "Error adding staff member: " . $e->getMessage();
+        }
+    }
+
+    public function editStaff($data) {
+        $query = "UPDATE staff_tbl SET 
+                  title_id = :title_id,
+                  first_name = :first_name,
+                  last_name = :last_name,
+                  status = :status,
+                  attendance_req = :attendance_req,
+                  joining_date = :joining_date,
+                  termination_date = :termination_date,
+                  phone_number = :phone_number,
+                  email_address = :email_address
+                  WHERE staff_id = :staff_id";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(':staff_id', $data['staff_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':title_id', $data['title_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':first_name', $data['first_name']);
+        $stmt->bindParam(':last_name', $data['last_name']);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_INT);
+        $stmt->bindParam(':attendance_req', $data['attendance_req'], PDO::PARAM_INT);
+        $stmt->bindParam(':joining_date', $data['joining_date']);
+        $stmt->bindParam(':termination_date', $data['termination_date']);
+        $stmt->bindParam(':phone_number', $data['phone_number']);
+        $stmt->bindParam(':email_address', $data['email_address']);
+        
+        try {
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            return "Error updating staff member: " . $e->getMessage();
+        }
     }
 }
