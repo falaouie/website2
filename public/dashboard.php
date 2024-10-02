@@ -2,9 +2,15 @@
 session_start();
 require_once '../includes/functions.php';
 require_once '../includes/User.php';
+require_once '../includes/auth.php';
 requireLogin();
 
-$username = $_SESSION['username'];
+if (isAdmin()) {
+    redirectTo('admin.php');
+}
+
+$firstName = $_SESSION['first_name'];
+$lastName = $_SESSION['last_name'];
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +24,7 @@ $username = $_SESSION['username'];
 <body>
     <div class="dashboard-container">
         <header>
-            <div class="user-greeting">Hi <?php echo htmlspecialchars($username); ?></div>
+            <div class="user-greeting">Hi <?php echo htmlspecialchars("$firstName $lastName"); ?></div>
             <div class="branch-buttons">
                 <button class="branch-btn active">Main Branch</button>
                 <button class="branch-btn">Oloa Branch</button>
@@ -37,7 +43,6 @@ $username = $_SESSION['username'];
             <a href="#" class="btn btn-primary">PURCHASES & EXPENSES</a>
             <a href="#" class="btn btn-primary">STATEMENTS</a>
             <a href="#" class="btn btn-primary">CUSTOMERS</a>
-            <a href="admin.php" class="btn btn-primary">ADMIN</a>
             <a href="#" class="btn btn-primary">BACK OFFICE</a>
         </div>
     </div>

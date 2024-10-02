@@ -12,7 +12,10 @@ function loginUser($username, $password) {
     if ($userData && password_verify($password, $userData['password'])) {
         $_SESSION['user_id'] = $userData['id'];
         $_SESSION['username'] = $userData['username'];
-        $_SESSION['user_roles'] = $user->getUserRoles($userData['id']);
+        $_SESSION['is_admin'] = $user->isAdmin($userData['id']);
+        $_SESSION['staff_id'] = $userData['staff_id'];
+        $_SESSION['first_name'] = $userData['first_name'];
+        $_SESSION['last_name'] = $userData['last_name'];
         return true;
     }
     
@@ -24,6 +27,6 @@ function logoutUser() {
     session_destroy();
 }
 
-function hasRole($role) {
-    return in_array($role, $_SESSION['user_roles'] ?? []);
+function isAdmin() {
+    return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
 }

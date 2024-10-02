@@ -2,17 +2,13 @@
 session_start();
 require_once '../includes/functions.php';
 require_once '../includes/User.php';
-require_once '../includes/db.php';
+require_once '../includes/auth.php';
 requireLogin();
 
-$user = new User(getDbConnection());
-$roles = $user->getUserRoles($_SESSION['user_id']);
-
-if (!in_array('admin', $roles)) {
+if (!isAdmin()) {
     redirectTo('dashboard.php');
 }
 
-$username = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
@@ -26,22 +22,17 @@ $username = $_SESSION['username'];
 <body>
     <div class="dashboard-container">
         <header>
-            <div class="user-greeting"><a href="dashboard.php" class="btn btn-primary">DASHBOARD</a></div>
-            <div class="branch-buttons">
-                <!-- Add branch buttons here if needed -->
-            </div>
+            <div class="user-greeting">Admin Panel</div>
             <a href="logout.php" class="btn btn-danger">LOGOUT</a>
         </header>
-        <h1 class="dashboard-title">ADMIN PANEL</h1>
+        <h1 class="dashboard-title">ADMIN DASHBOARD</h1>
         <div class="btn-grid">
-            <a href="#" id="manage-users" class="btn btn-primary">Manage Users</a>
-            <a href="#" id="system-settings" class="btn btn-primary">System Settings</a>
-            <!-- Add more admin functions as needed -->
+            <a href="#" class="btn btn-primary">Manage Staff</a>
+            <a href="#" class="btn btn-primary">Manage Titles</a>
+            <a href="#" class="btn btn-primary">Reset Passwords</a>
+            <a href="#" class="btn btn-primary">View Logs</a>
         </div>
     </div>
-    <footer>
-        <p>&copy; Copyright 2023 Silver System</p>
-    </footer>
     <script src="../assets/js/app.js"></script>
 </body>
 </html>
