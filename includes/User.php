@@ -83,7 +83,6 @@ class User {
     }
 
     public function logLogin($userId) {
-        // First, get the staff_id for this user (if it exists)
         $query = "SELECT staff_id FROM users_tbl WHERE id = :user_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':user_id', $userId);
@@ -91,17 +90,15 @@ class User {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
         $staffId = $result['staff_id'] ?? null;
-
-        // Now log the login, allowing NULL for staff_id (which will be the case for admin)
+    
         $query = "INSERT INTO user_login_log (staff_id, login_time) VALUES (:staff_id, NOW())";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':staff_id', $staffId, PDO::PARAM_INT);
         $stmt->execute();
         return $this->conn->lastInsertId();
     }
-
-    public function logLogout($userId) {
-        // First, get the staff_id for this user (if it exists)
+    
+    public function logLogout($userId, $reason = 'manual') {
         $query = "SELECT staff_id FROM users_tbl WHERE id = :user_id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':user_id', $userId);
@@ -109,15 +106,15 @@ class User {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
         $staffId = $result['staff_id'] ?? null;
-
-        // Now log the logout
+    
         $query = "UPDATE user_login_log 
-                  SET logout_time = NOW() 
+                  SET logout_time = NOW(), logout_reason = :reason
                   WHERE (staff_id = :staff_id OR (:staff_id IS NULL AND staff_id IS NULL))
                   AND logout_time IS NULL 
                   ORDER BY login_time DESC LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':staff_id', $staffId, PDO::PARAM_INT);
+        $stmt->bindParam(':reason', $reason);
         return $stmt->execute();
     }
 
