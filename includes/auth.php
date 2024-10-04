@@ -1,4 +1,5 @@
 <?php
+// date_default_timezone_set('Asia/Beirut');
 require_once 'db.php';
 require_once 'User.php';
 require_once 'functions.php';
