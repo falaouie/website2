@@ -225,6 +225,10 @@ header {
   box-sizing: border-box;
 }
 
+.text-color-danger {
+  color: #dc3545;
+}
+
 /* Table Styles */
 /* .users-table {
   width: 100%;

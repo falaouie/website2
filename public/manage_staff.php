@@ -32,8 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Function to get form value from session or empty string
 function getFormValue($field) {
-    return isset($_SESSION['form_data'][$field]) ? htmlspecialchars($_SESSION['form_data'][$field]) : '';
-}
+        return isset($_SESSION['form_data'][$field]) ? htmlspecialchars($_SESSION['form_data'][$field]) : '';
+    }
+
+    // Sort titles by title_id
+    usort($titles, function ($a, $b) {
+        return $a['title_id'] <=> $b['title_id'];
+    });
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +70,7 @@ function getFormValue($field) {
             <div class="input-group">
                 <label for="title_id">Job Title:</label>
                 <select name="title_id" id="title_id" required>
+                    <option value="">Select</option>
                     <?php foreach ($titles as $title): ?>
                         <option value="<?php echo $title['title_id']; ?>" <?php echo getFormValue('title_id') == $title['title_id'] ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($title['title_name']); ?>
@@ -83,6 +89,7 @@ function getFormValue($field) {
             <div class="input-group">
                 <label for="status">Status:</label>
                 <select name="status" id="status" required>
+                    <option value="">Select</option>
                     <option value="0" <?php echo getFormValue('status') == '0' ? 'selected' : ''; ?>>Inactive</option>
                     <option value="1" <?php echo getFormValue('status') == '1' ? 'selected' : ''; ?>>Active</option>
                 </select>
@@ -90,6 +97,7 @@ function getFormValue($field) {
             <div class="input-group">
                 <label for="attendance_req">Attendance Required:</label>
                 <select name="attendance_req" id="attendance_req" required>
+                    <option value="">Select</option>
                     <option value="0" <?php echo getFormValue('attendance_req') == '0' ? 'selected' : ''; ?>>No</option>
                     <option value="1" <?php echo getFormValue('attendance_req') == '1' ? 'selected' : ''; ?>>Yes</option>
                 </select>

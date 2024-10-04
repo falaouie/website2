@@ -67,7 +67,7 @@ function getFormValue($field) {
         <?php endif; ?>
 
         <section class="users-section">
-            <h2>Add New User <span>(Only for staff that need system access)</span></h2>
+            <h2>Add New User <span class="text-color-danger">(Only for staff that need system access)</span></h2>
             <table>
                 <thead>
                     <tr>
