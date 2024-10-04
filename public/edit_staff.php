@@ -5,10 +5,6 @@ require_once '../includes/User.php';
 require_once '../includes/auth.php';
 requireLogin();
 
-if (!isAdmin()) {
-    redirectTo('dashboard.php');
-}
-
 $user = new User(getDbConnection());
 $titles = $user->getAllTitles();
 
@@ -27,27 +23,34 @@ if (!$staffMember) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate and sanitize input
-    $staffData = [
-        'staff_id' => $staffId,
-        'title_id' => filter_input(INPUT_POST, 'title_id', FILTER_SANITIZE_NUMBER_INT),
-        'first_name' => filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING),
-        'last_name' => filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING),
-        'status' => filter_input(INPUT_POST, 'status', FILTER_SANITIZE_NUMBER_INT),
-        'attendance_req' => filter_input(INPUT_POST, 'attendance_req', FILTER_SANITIZE_NUMBER_INT),
-        'joining_date' => filter_input(INPUT_POST, 'joining_date', FILTER_SANITIZE_STRING),
-        'termination_date' => $_POST['termination_date'] ? filter_input(INPUT_POST, 'termination_date', FILTER_SANITIZE_STRING) : null,
-        'phone_number' => filter_input(INPUT_POST, 'phone_number', FILTER_SANITIZE_STRING),
-        'email_address' => filter_input(INPUT_POST, 'email_address', FILTER_SANITIZE_EMAIL)
-    ];
-
-    $result = $user->editStaff($staffData);
-    if ($result === true) {
-        $success = "Staff member updated successfully.";
-        $staffMember = $user->getStaffById($staffId); // Refresh data
-    } else {
-        $error = $result;
+    if (isset($_POST['edit_staff'])) {
+        // Store form data in session
+        $_SESSION['form_data'] = $_POST;
+        
+        $result = $user->editStaff($_POST);
+        if ($result === true) {
+            $success = "Staff member updated successfully.";
+            // Clear session data on success
+            unset($_SESSION['form_data']);
+            $staffMember = $user->getStaffById($staffId); // Refresh data
+        } else {
+            $error = $result;
+        }
     }
+}
+
+// Function to get form value from session, current staff data, or empty string
+function getFormValue($field) {
+    global $staffMember;
+    if (isset($_SESSION['form_data'][$field])) {
+        return htmlspecialchars($_SESSION['form_data'][$field]);
+    } elseif (isset($staffMember[$field])) {
+        if ($field === 'termination_date' && $staffMember[$field] === null) {
+            return '';
+        }
+        return htmlspecialchars($staffMember[$field]);
+    }
+    return '';
 }
 ?>
 
@@ -75,11 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
 
         <form action="edit_staff.php?id=<?php echo $staffId; ?>" method="post">
+            <input type="hidden" name="edit_staff" value="1">
+            <input type="hidden" name="staff_id" value="<?php echo $staffId; ?>">
             <div class="input-group">
                 <label for="title_id">Title:</label>
                 <select name="title_id" id="title_id" required>
                     <?php foreach ($titles as $title): ?>
-                        <option value="<?php echo $title['title_id']; ?>" <?php echo ($title['title_id'] == $staffMember['title_id']) ? 'selected' : ''; ?>>
+                        <option value="<?php echo $title['title_id']; ?>" <?php echo getFormValue('title_id') == $title['title_id'] ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($title['title_name']); ?>
                         </option>
                     <?php endforeach; ?>
@@ -87,41 +92,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="input-group">
                 <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($staffMember['first_name']); ?>" required>
+                <input type="text" id="first_name" name="first_name" value="<?php echo getFormValue('first_name'); ?>" required>
             </div>
             <div class="input-group">
                 <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($staffMember['last_name']); ?>" required>
+                <input type="text" id="last_name" name="last_name" value="<?php echo getFormValue('last_name'); ?>" required>
             </div>
             <div class="input-group">
                 <label for="status">Status:</label>
                 <select name="status" id="status" required>
-                    <option value="0" <?php echo $staffMember['status'] == 0 ? 'selected' : ''; ?>>Inactive</option>
-                    <option value="1" <?php echo $staffMember['status'] == 1 ? 'selected' : ''; ?>>Active</option>
+                    <option value="0" <?php echo getFormValue('status') == 0 ? 'selected' : ''; ?>>Inactive</option>
+                    <option value="1" <?php echo getFormValue('status') == 1 ? 'selected' : ''; ?>>Active</option>
                 </select>
             </div>
             <div class="input-group">
                 <label for="attendance_req">Attendance Required:</label>
                 <select name="attendance_req" id="attendance_req" required>
-                    <option value="0" <?php echo $staffMember['attendance_req'] == 0 ? 'selected' : ''; ?>>No</option>
-                    <option value="1" <?php echo $staffMember['attendance_req'] == 1 ? 'selected' : ''; ?>>Yes</option>
+                    <option value="0" <?php echo getFormValue('attendance_req') == 0 ? 'selected' : ''; ?>>No</option>
+                    <option value="1" <?php echo getFormValue('attendance_req') == 1 ? 'selected' : ''; ?>>Yes</option>
                 </select>
             </div>
             <div class="input-group">
                 <label for="joining_date">Joining Date:</label>
-                <input type="date" id="joining_date" name="joining_date" value="<?php echo $staffMember['joining_date']; ?>" required>
+                <input type="date" id="joining_date" name="joining_date" value="<?php echo getFormValue('joining_date'); ?>" required>
             </div>
             <div class="input-group">
                 <label for="termination_date">Termination Date:</label>
-                <input type="date" id="termination_date" name="termination_date" value="<?php echo $staffMember['termination_date'] ?? ''; ?>">
+                <input type="date" id="termination_date" name="termination_date" value="<?php echo getFormValue('termination_date'); ?>">
             </div>
             <div class="input-group">
                 <label for="phone_number">Phone Number:</label>
-                <input type="tel" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($staffMember['phone_number'] ?? ''); ?>">
+                <input type="tel" id="phone_number" name="phone_number" value="<?php echo getFormValue('phone_number'); ?>" required>
             </div>
             <div class="input-group">
                 <label for="email_address">Email Address:</label>
-                <input type="email" id="email_address" name="email_address" value="<?php echo htmlspecialchars($staffMember['email_address'] ?? ''); ?>">
+                <input type="email" id="email_address" name="email_address" value="<?php echo getFormValue('email_address'); ?>">
             </div>
             <button type="submit" class="btn btn-primary">Update Staff Member</button>
         </form>

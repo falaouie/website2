@@ -62,7 +62,7 @@ $csrf_token = generateCSRFToken();
                 <?php if ($error): ?>
                     <p class="error"><?php echo htmlspecialchars($error); ?></p>
                 <?php endif; ?>
-                <button type="submit">Login</button>
+                <button type="submit" class="btn btn-primary btn-medium">Login</button>
             </form>
         </div>
     </div>

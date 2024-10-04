@@ -5,10 +5,6 @@ require_once '../includes/User.php';
 require_once '../includes/auth.php';
 requireLogin();
 
-if (!isAdmin()) {
-    redirectTo('dashboard.php');
-}
-
 $user = new User(getDbConnection());
 $users = $user->getAllUsers();
 $availableStaff = $user->getStaffWithoutUsers();
@@ -18,16 +14,30 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_user'])) {
+        $_SESSION['form_data'] = $_POST;
+        
         $result = $user->addUser($_POST);
         if ($result === true) {
             $success = "User added successfully.";
+            unset($_SESSION['form_data']);
+        } else {
+            $error = $result;
+        }
+    } elseif (isset($_POST['reset_password'])) {
+        $userId = $_POST['user_id'];
+        $result = $user->resetPassword($userId);
+        if ($result === true) {
+            $success = "Password reset successfully for user ID: " . $userId;
         } else {
             $error = $result;
         }
     }
-    // Refresh user list and available staff after add
     $users = $user->getAllUsers();
     $availableStaff = $user->getStaffWithoutUsers();
+}
+
+function getFormValue($field) {
+    return isset($_SESSION['form_data'][$field]) ? htmlspecialchars($_SESSION['form_data'][$field]) : '';
 }
 ?>
 
@@ -44,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <header>
             <h1>Manage Users</h1>
             <div>
-                <a href="admin.php" class="btn btn-primary">Back to Admin Dashboard</a>
-                <a href="logout.php" class="btn btn-danger">LOGOUT</a>
+                <a href="admin.php" class="btn btn-primary btn-medium">Back to Admin Dashboard</a>
+                <a href="logout.php" class="btn btn-danger btn-medium">LOGOUT</a>
             </div>
         </header>
 
@@ -62,26 +72,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <thead>
                     <tr>
                         <th>Username</th>
-                        <th>Associated Staff</th>
-                        <th>Actions</th>
+                        <th>Staff Name</th>
+                        <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <form action="manage_users.php" method="post" class="add-user-form">
+                        <form action="manage_users.php" method="post" class="add-user-form" id="addUserForm">
                             <input type="hidden" name="add_user" value="1">
-                            <td><input type="text" id="username" name="username" required maxlength="30" class="wide-input"></td>
+                            <td><input type="text" id="username" name="username" required maxlength="30" class="wide-input" value="<?php echo getFormValue('username'); ?>"></td>
                             <td>
-                                <select name="staff_id" id="staff_id">
-                                    <option value="">None (Admin)</option>
+                                <select name="staff_id" id="staff_id" required>
+                                    <option value="">Select</option>
                                     <?php foreach ($availableStaff as $staff): ?>
-                                        <option value="<?php echo $staff['staff_id']; ?>">
+                                        <option value="<?php echo $staff['staff_id']; ?>" <?php echo getFormValue('staff_id') == $staff['staff_id'] ? 'selected' : ''; ?>>
                                             <?php echo htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                             </td>
-                            <td><button type="submit" class="btn btn-primary btn-small">Add User</button></td>
+                            <td><button type="submit" class="btn btn-primary btn-medium">Add User</button></td>
                         </form>
                     </tr>
                 </tbody>
@@ -92,17 +102,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <thead>
                     <tr>
                         <th>Username</th>
-                        <th>Associated Staff</th>
-                        <th>Actions</th>
+                        <th>Staff Name</th>
+                        <th>Reset</th>
+                        <th>Access</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($users as $user): ?>
+                    <?php foreach ($users as $currentUser): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($user['username']); ?></td>
-                            <td><?php echo $user['staff_id'] ? htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) : 'Admin'; ?></td>
+                            <td><?php echo htmlspecialchars($currentUser['username']); ?></td>
+                            <td><?php echo $currentUser['staff_id'] ? htmlspecialchars($currentUser['first_name'] . ' ' . $currentUser['last_name']) : 'Admin'; ?></td>
                             <td>
-                                <a href="edit_user.php?id=<?php echo $user['id']; ?>" class="btn btn-primary btn-small">Edit</a>
+                                <?php if ($currentUser['password_reset']): ?>
+                                    <span>Password Reset</span>
+                                <?php else: ?>
+                                    <form action="manage_users.php" method="post" style="display: inline;">
+                                        <input type="hidden" name="reset_password" value="1">
+                                        <input type="hidden" name="user_id" value="<?php echo $currentUser['id']; ?>">
+                                        <button type="submit" class="btn btn-warning btn-medium">Reset Password</button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-medium">Access</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -111,5 +133,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </section>
     </div>
     <script src="../assets/js/app.js"></script>
+    <script>
+    document.getElementById('addUserForm').addEventListener('submit', function(e) {
+        var staffSelect = document.getElementById('staff_id');
+        if (staffSelect.value === "") {
+            e.preventDefault();
+            alert('Please select an Staff Name member.');
+        }
+    });
+    </script>
 </body>
 </html>

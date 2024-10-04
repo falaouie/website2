@@ -5,12 +5,18 @@ require_once '../includes/User.php';
 require_once '../includes/auth.php';
 requireLogin();
 
-if (!isAdmin()) {
-    redirectTo('dashboard.php');
-}
+// if (!isAdmin()) {
+//     redirectTo('dashboard.php');
+// }
 
 $user = new User(getDbConnection());
-$adminFirstName = $user->getAdminFirstName();
+$isAdmin = $_SESSION['username'] === 'admin';
+
+if ($isAdmin) {
+    $adminFirstName = $user->getAdminFirstName();
+} else {
+    $firstName = $_SESSION['first_name'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -18,13 +24,17 @@ $adminFirstName = $user->getAdminFirstName();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Silver System</title>
+    <title>Admin Dashboard - Silver System</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
     <div class="dashboard-container">
         <header>
-            <div class="user-greeting">Hi <?php echo htmlspecialchars($adminFirstName); ?></div>
+            <?php if ($isAdmin): ?>
+                <div class="user-greeting">Hi <?php echo htmlspecialchars($adminFirstName); ?></div>
+            <?php else: ?>
+                <a href="dashboard.php" class="btn btn-primary">DASHBOARD</a>
+            <?php endif; ?>
             <a href="logout.php" class="btn btn-danger">LOGOUT</a>
         </header>
         <h1 class="dashboard-title">ADMIN DASHBOARD</h1>

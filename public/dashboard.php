@@ -5,9 +5,13 @@ require_once '../includes/User.php';
 require_once '../includes/auth.php';
 requireLogin();
 
-if (isAdmin()) {
+if ($_SESSION['username'] == 'admin') {
     redirectTo('admin.php');
 }
+
+// if (isAdmin()) {
+//     redirectTo('admin.php');
+// }
 
 $firstName = $_SESSION['first_name'];
 $lastName = $_SESSION['last_name'];
@@ -43,6 +47,7 @@ $lastName = $_SESSION['last_name'];
             <a href="#" class="btn btn-primary">PURCHASES & EXPENSES</a>
             <a href="#" class="btn btn-primary">STATEMENTS</a>
             <a href="#" class="btn btn-primary">CUSTOMERS</a>
+            <a href="admin.php" class="btn btn-primary">ADMIN</a>
             <a href="#" class="btn btn-primary">BACK OFFICE</a>
         </div>
     </div>
