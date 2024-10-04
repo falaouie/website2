@@ -48,13 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form action="reset_password.php" method="post">
                 <div class="input-group">
                     <label for="new_password">New Password:</label>
-                    <input type="password" id="new_password" name="new_password" required>
+                    <input type="password" id="new_password" name="new_password" required autofocus>
                 </div>
                 <div class="input-group">
                     <label for="confirm_password">Confirm Password:</label>
                     <input type="password" id="confirm_password" name="confirm_password" required>
                 </div>
-                <button type="submit">Reset Password</button>
+                <button type="submit" class="btn btn-primary btn-medium">Reset Password</button>
             </form>
         </div>
     </div>

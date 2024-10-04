@@ -18,6 +18,31 @@ h2 {
   margin-bottom: 20px;
 }
 
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th, 
+table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* .wide-input {
+  width: 100%;
+} */
+
+
 /* Login, Admin Setup, and Reset Password Page Styles */
 .login-page,
 .admin-setup-page,
@@ -201,7 +226,7 @@ header {
 }
 
 /* Table Styles */
-.users-table {
+/* .users-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
@@ -222,7 +247,7 @@ header {
 
 .users-table .wide-input {
   width: 100%;
-}
+} */
 
 /* User Management Styles */
 .add-user-section, 

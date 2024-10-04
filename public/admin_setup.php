@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
                 </div>
-                <button type="submit">Create Admin</button>
+                <button type="submit" class="btn btn-primary btn-medium">Create Admin</button>
             </form>
         </div>
     </div>

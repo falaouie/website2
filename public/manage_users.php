@@ -67,8 +67,8 @@ function getFormValue($field) {
         <?php endif; ?>
 
         <section class="users-section">
-            <h2>Add New User</h2>
-            <table class="users-table">
+            <h2>Add New User <span>(Only for staff that need system access)</span></h2>
+            <table>
                 <thead>
                     <tr>
                         <th>Username</th>
@@ -80,7 +80,7 @@ function getFormValue($field) {
                     <tr>
                         <form action="manage_users.php" method="post" class="add-user-form" id="addUserForm">
                             <input type="hidden" name="add_user" value="1">
-                            <td><input type="text" id="username" name="username" required maxlength="30" class="wide-input" value="<?php echo getFormValue('username'); ?>"></td>
+                            <td><input type="text" id="username" name="username" required maxlength="30" class="wide-input" value="<?php echo getFormValue('username'); ?>" autofocus></td>
                             <td>
                                 <select name="staff_id" id="staff_id" required>
                                     <option value="">Select</option>
@@ -98,12 +98,12 @@ function getFormValue($field) {
             </table>
 
             <h2>Current Users</h2>
-            <table class="users-table">
+            <table>
                 <thead>
                     <tr>
                         <th>Username</th>
                         <th>Staff Name</th>
-                        <th>Reset</th>
+                        <th>Password</th>
                         <th>Access</th>
                     </tr>
                 </thead>
@@ -114,7 +114,7 @@ function getFormValue($field) {
                             <td><?php echo $currentUser['staff_id'] ? htmlspecialchars($currentUser['first_name'] . ' ' . $currentUser['last_name']) : 'Admin'; ?></td>
                             <td>
                                 <?php if ($currentUser['password_reset']): ?>
-                                    <span>Password Reset</span>
+                                    <span>Temp Pass: <?php echo htmlspecialchars($currentUser['username']); ?></span>
                                 <?php else: ?>
                                     <form action="manage_users.php" method="post" style="display: inline;">
                                         <input type="hidden" name="reset_password" value="1">
@@ -138,7 +138,7 @@ function getFormValue($field) {
         var staffSelect = document.getElementById('staff_id');
         if (staffSelect.value === "") {
             e.preventDefault();
-            alert('Please select an Staff Name member.');
+            alert('Please select a Staff Name member.');
         }
     });
     </script>

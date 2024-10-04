@@ -53,7 +53,7 @@ $csrf_token = generateCSRFToken();
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                 <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
+                    <input type="text" id="username" name="username" required autofocus>
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
