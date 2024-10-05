@@ -1,12 +1,6 @@
 <?php
 // File: sync_staff.php
 
-// Enable error reporting for debugging (remove in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Adjust these paths as needed
 require_once '../config/database.php';
 require_once '../includes/db.php';
 
