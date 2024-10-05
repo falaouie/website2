@@ -201,17 +201,6 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getStaffWithoutUsers() {
-        $query = "SELECT s.staff_id, s.first_name, s.last_name 
-                  FROM staff_tbl s
-                  LEFT JOIN users_tbl u ON s.staff_id = u.staff_id
-                  WHERE u.id IS NULL
-                  ORDER BY s.last_name, s.first_name";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function getAllStaff() {
         $query = "SELECT s.*, t.title_name FROM staff_tbl s
                   JOIN titles_tbl t ON s.title_id = t.title_id
@@ -241,9 +230,20 @@ class User {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getStaffWithoutUsers() {
+        $query = "SELECT s.staff_id, s.first_name, s.last_name 
+                  FROM staff_tbl s
+                  LEFT JOIN users_tbl u ON s.staff_id = u.staff_id
+                  WHERE u.id IS NULL AND s.system_access = 1
+                  ORDER BY s.last_name, s.first_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     public function addStaff($data) {
         $this->conn->beginTransaction();
-
+    
         try {
             // Check for existing staff with the same name
             $checkNameQuery = "SELECT COUNT(*) FROM staff_tbl WHERE first_name = :first_name AND last_name = :last_name";
@@ -254,7 +254,7 @@ class User {
             if ($checkNameStmt->fetchColumn() > 0) {
                 throw new Exception("A staff member with this name already exists.");
             }
-
+    
             // Check for existing phone number
             $checkPhoneQuery = "SELECT COUNT(*) FROM staff_tbl WHERE phone_number = :phone_number";
             $checkPhoneStmt = $this->conn->prepare($checkPhoneQuery);
@@ -263,7 +263,7 @@ class User {
             if ($checkPhoneStmt->fetchColumn() > 0) {
                 throw new Exception("This phone number is already in use.");
             }
-
+    
             // Check for existing email if provided
             if (!empty($data['email_address'])) {
                 $checkEmailQuery = "SELECT COUNT(*) FROM staff_tbl WHERE email_address = :email_address";
@@ -274,9 +274,9 @@ class User {
                     throw new Exception("This email address is already in use.");
                 }
             }
-
-            $query = "INSERT INTO staff_tbl (title_id, first_name, last_name, status, attendance_req, joining_date, phone_number, email_address) 
-                      VALUES (:title_id, :first_name, :last_name, :status, :attendance_req, :joining_date, :phone_number, :email_address)";
+    
+            $query = "INSERT INTO staff_tbl (title_id, first_name, last_name, status, attendance_req, joining_date, phone_number, email_address, system_access) 
+                      VALUES (:title_id, :first_name, :last_name, :status, :attendance_req, :joining_date, :phone_number, :email_address, :system_access)";
             
             $stmt = $this->conn->prepare($query);
             
@@ -288,6 +288,7 @@ class User {
             $stmt->bindParam(':joining_date', $data['joining_date']);
             $stmt->bindParam(':phone_number', $data['phone_number']);
             $stmt->bindParam(':email_address', $data['email_address']);
+            $stmt->bindParam(':system_access', $data['system_access'], PDO::PARAM_INT);
             
             $stmt->execute();
             $this->conn->commit();
@@ -297,10 +298,10 @@ class User {
             return "Error adding staff member: " . $e->getMessage();
         }
     }
-
+    
     public function editStaff($data) {
         $this->conn->beginTransaction();
-
+    
         try {
             // Check for existing staff with the same name (excluding the current staff member)
             $checkNameQuery = "SELECT COUNT(*) FROM staff_tbl WHERE first_name = :first_name AND last_name = :last_name AND staff_id != :staff_id";
@@ -312,7 +313,7 @@ class User {
             if ($checkNameStmt->fetchColumn() > 0) {
                 throw new Exception("A staff member with this name already exists.");
             }
-
+    
             // Check for existing phone number (excluding the current staff member)
             $checkPhoneQuery = "SELECT COUNT(*) FROM staff_tbl WHERE phone_number = :phone_number AND staff_id != :staff_id";
             $checkPhoneStmt = $this->conn->prepare($checkPhoneQuery);
@@ -322,7 +323,7 @@ class User {
             if ($checkPhoneStmt->fetchColumn() > 0) {
                 throw new Exception("This phone number is already in use.");
             }
-
+    
             // Check for existing email if provided (excluding the current staff member)
             if (!empty($data['email_address'])) {
                 $checkEmailQuery = "SELECT COUNT(*) FROM staff_tbl WHERE email_address = :email_address AND staff_id != :staff_id";
@@ -334,18 +335,19 @@ class User {
                     throw new Exception("This email address is already in use.");
                 }
             }
-
+    
             $query = "UPDATE staff_tbl SET 
-                    title_id = :title_id,
-                    first_name = :first_name,
-                    last_name = :last_name,
-                    status = :status,
-                    attendance_req = :attendance_req,
-                    joining_date = :joining_date,
-                    termination_date = :termination_date,
-                    phone_number = :phone_number,
-                    email_address = :email_address
-                    WHERE staff_id = :staff_id";
+                      title_id = :title_id,
+                      first_name = :first_name,
+                      last_name = :last_name,
+                      status = :status,
+                      attendance_req = :attendance_req,
+                      joining_date = :joining_date,
+                      termination_date = :termination_date,
+                      phone_number = :phone_number,
+                      email_address = :email_address,
+                      system_access = :system_access
+                      WHERE staff_id = :staff_id";
             
             $stmt = $this->conn->prepare($query);
             
@@ -372,6 +374,8 @@ class User {
             } else {
                 $stmt->bindParam(':email_address', $data['email_address']);
             }
+            
+            $stmt->bindParam(':system_access', $data['system_access'], PDO::PARAM_INT);
             
             $stmt->execute();
             $this->conn->commit();

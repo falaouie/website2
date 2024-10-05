@@ -63,7 +63,7 @@ function getFormValue($field) {
         <?php if ($success): ?>
             <p class="success"><?php echo htmlspecialchars($success); ?></p>
         <?php endif; ?>
-
+        
         <h2>Add New Staff Member</h2>
         <form action="manage_staff.php" method="post">
             <input type="hidden" name="add_staff" value="1">
@@ -114,9 +114,16 @@ function getFormValue($field) {
                 <label for="email_address">Email Address:</label>
                 <input type="email" id="email_address" name="email_address" value="<?php echo getFormValue('email_address'); ?>">
             </div>
+            <div class="input-group">
+                <label for="system_access">System Access:</label>
+                <select name="system_access" id="system_access" required>
+                    <option value="">Select</option>
+                    <option value="0" <?php echo getFormValue('system_access') == '0' ? 'selected' : ''; ?>>No</option>
+                    <option value="1" <?php echo getFormValue('system_access') == '1' ? 'selected' : ''; ?>>Yes</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Add Staff Member</button>
         </form>
-
         <h2>Current Staff Members</h2>
         <table>
             <thead>
@@ -124,6 +131,7 @@ function getFormValue($field) {
                     <th>Name</th>
                     <th>Title</th>
                     <th>Status</th>
+                    <th>System Access</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -133,13 +141,14 @@ function getFormValue($field) {
                         <td><?php echo htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']); ?></td>
                         <td><?php echo htmlspecialchars($staff['title_name']); ?></td>
                         <td><?php echo $staff['status'] ? 'Active' : 'Inactive'; ?></td>
+                        <td><?php echo $staff['system_access'] ? 'Yes' : 'No'; ?></td>
                         <td>
                             <a href="edit_staff.php?id=<?php echo $staff['staff_id']; ?>" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-        </table>
+</table>
     </div>
     <script src="../assets/js/app.js"></script>
 </body>

@@ -128,6 +128,13 @@ function getFormValue($field) {
                 <label for="email_address">Email Address:</label>
                 <input type="email" id="email_address" name="email_address" value="<?php echo getFormValue('email_address'); ?>">
             </div>
+            <div class="input-group">
+                <label for="system_access">System Access:</label>
+                <select name="system_access" id="system_access" required>
+                    <option value="0" <?php echo getFormValue('system_access') == 0 ? 'selected' : ''; ?>>No</option>
+                    <option value="1" <?php echo getFormValue('system_access') == 1 ? 'selected' : ''; ?>>Yes</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Update Staff Member</button>
         </form>
     </div>
