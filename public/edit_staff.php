@@ -60,7 +60,7 @@ function getFormValue($field) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Staff Member - Silver System</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -138,6 +138,6 @@ function getFormValue($field) {
             <button type="submit" class="btn btn-primary">Update Staff Member</button>
         </form>
     </div>
-    <script src="../assets/js/app.js"></script>
+    <script src="./assets/js/app.js"></script>
 </body>
 </html>

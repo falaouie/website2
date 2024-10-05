@@ -47,7 +47,7 @@ function getFormValue($field) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users - Silver System</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -132,7 +132,7 @@ function getFormValue($field) {
             </table>
         </section>
     </div>
-    <script src="../assets/js/app.js"></script>
+    <script src="./assets/js/app.js"></script>
     <script>
     document.getElementById('addUserForm').addEventListener('submit', function(e) {
         var staffSelect = document.getElementById('staff_id');

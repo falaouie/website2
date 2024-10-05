@@ -42,13 +42,13 @@ $csrf_token = generateCSRFToken();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Silver System</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
     <div class="container login-page">
         <div class="login-date-display"></div>
         <div class="login-container">
-            <img src="../assets/img/silver_system_logo.png" alt="Silver System Logo" class="logo">
+            <img src="./assets/img/silver_system_logo.png" alt="Silver System Logo" class="logo">
             <form action="login.php" method="post">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                 <div class="input-group">
@@ -69,6 +69,6 @@ $csrf_token = generateCSRFToken();
     <footer>
         <p>&copy; Copyright 2023 Silver System</p>
     </footer>
-    <script src="../assets/js/app.js"></script>
+    <script src="./assets/js/app.js"></script>
 </body>
 </html>

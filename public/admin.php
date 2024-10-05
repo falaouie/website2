@@ -25,7 +25,7 @@ if ($isAdmin) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Silver System</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -45,6 +45,6 @@ if ($isAdmin) {
             <a href="#" class="btn btn-primary">View Logs</a>
         </div>
     </div>
-    <script src="../assets/js/app.js"></script>
+    <script src="./assets/js/app.js"></script>
 </body>
 </html>
