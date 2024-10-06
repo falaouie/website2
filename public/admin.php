@@ -35,9 +35,9 @@ if ($isAdmin) {
             <?php else: ?>
                 <a href="dashboard.php" class="btn btn-primary">DASHBOARD</a>
             <?php endif; ?>
-            <a href="logout.php" class="btn btn-danger">LOGOUT</a>
+            <div><h1 class="dashboard-title">ADMIN DASHBOARD</h1></div>
+            <div><a href="logout.php" class="btn btn-danger">LOGOUT</a></div>
         </header>
-        <h1 class="dashboard-title">ADMIN DASHBOARD</h1>
         <div class="btn-grid">
             <a href="manage_staff.php" class="btn btn-primary">Manage Staff</a>
             <a href="manage_users.php" class="btn btn-primary">Manage Users</a>

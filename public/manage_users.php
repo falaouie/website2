@@ -52,11 +52,9 @@ function getFormValue($field) {
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>Manage Users</h1>
-            <div>
-                <a href="admin.php" class="btn btn-primary btn-medium">Back to Admin Dashboard</a>
-                <a href="logout.php" class="btn btn-danger btn-medium">LOGOUT</a>
-            </div>
+            <div><h1>Manage Users</h1></div>
+            <div><a href="admin.php" class="btn btn-primary btn-medium">Admin Dashboard</a></div>
+            <div><a href="logout.php" class="btn btn-danger btn-medium">LOGOUT</a></div>
         </header>
 
         <?php if ($error): ?>
@@ -67,7 +65,7 @@ function getFormValue($field) {
         <?php endif; ?>
 
         <section class="users-section">
-            <h2>Add New User <span class="text-color-danger">(Only for staff that need system access)</span></h2>
+            <h2>Add New User <span class="text-color-danger">(Only for staff that have system access)</span></h2>
             <table>
                 <thead>
                     <tr>

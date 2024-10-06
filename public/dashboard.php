@@ -9,12 +9,7 @@ if ($_SESSION['username'] == 'admin') {
     redirectTo('admin.php');
 }
 
-// if (isAdmin()) {
-//     redirectTo('admin.php');
-// }
-
 $firstName = $_SESSION['first_name'];
-$lastName = $_SESSION['last_name'];
 ?>
 
 <!DOCTYPE html>
@@ -28,21 +23,17 @@ $lastName = $_SESSION['last_name'];
 <body>
     <div class="dashboard-container">
         <header>
-            <div class="user-greeting">Hi <?php echo htmlspecialchars("$firstName $lastName"); ?></div>
-            <div class="branch-buttons">
-                <button class="branch-btn active">Main Branch</button>
-                <button class="branch-btn">Oloa Branch</button>
-            </div>
-            <a href="logout.php" class="btn btn-danger">LOGOUT</a>
+            <div class="user-greeting">Hi <?php echo htmlspecialchars("$firstName"); ?></div>
+            <div><h1 class="dashboard-title">MAIN DASHBOARD</h1></div>
+            <div><a href="logout.php" class="btn btn-danger">LOGOUT</a></div>
         </header>
-        <h1 class="dashboard-title">MAIN DASHBOARD</h1>
         <div class="btn-grid">
-            <a href="#" class="btn btn-primary">SALES & ORDERS</a>
+            <a href="./sales/index.php" class="btn btn-primary">SALES & ORDERS</a>
             <a href="#" class="btn btn-primary">PAYMENTS & CREDITS</a>
             <a href="#" class="btn btn-primary">PREVIOUS INVOICES</a>
             <a href="#" class="btn btn-primary">LABELS</a>
             <a href="#" class="btn btn-primary">KITCHEN</a>
-            <a href="#" class="btn btn-primary">ATTENDANCE</a>
+            <a href="./attendance/index.php" class="btn btn-primary">ATTENDANCE</a>
             <a href="#" class="btn btn-primary">PRODUCTS</a>
             <a href="#" class="btn btn-primary">PURCHASES & EXPENSES</a>
             <a href="#" class="btn btn-primary">STATEMENTS</a>

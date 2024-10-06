@@ -52,9 +52,9 @@ function getFormValue($field) {
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>Manage Staff</h1>
-            <a href="admin.php" class="btn btn-primary">Back to Admin Dashboard</a>
-            <a href="logout.php" class="btn btn-danger">LOGOUT</a>
+            <div><h1>Manage Staff</h1></div>
+            <div><a href="admin.php" class="btn btn-primary">Admin Dashboard</a></div>
+            <div><a href="logout.php" class="btn btn-danger">LOGOUT</a></div>
         </header>
 
         <?php if ($error): ?>

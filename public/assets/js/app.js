@@ -21,9 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function logoutDueToInactivity() {
-    fetch('logout.php?reason=inactivity', { method: 'POST' }).then(() => {
-      window.location.href = 'login.php';
-    });
+    fetch('/public/logout.php?reason=inactivity', { method: 'POST' }).then(
+      () => {
+        window.location.href = '/public/login.php';
+      }
+    );
   }
 
   // Reset timer on user activity
