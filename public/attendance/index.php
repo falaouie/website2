@@ -11,7 +11,7 @@ requireLogin();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance - Silver System</title>
-    <link rel="stylesheet" href="../../public/assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -23,6 +23,6 @@ requireLogin();
 
         <div>Attendance</div>
     </div>
-    <script src="../../public/assets/js/app.js"></script>
+    <script src="../assets/js/app.js"></script>
 </body>
 </html>

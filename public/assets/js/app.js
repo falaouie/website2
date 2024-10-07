@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Inactivity Timer
   let inactivityTimer;
-  const inactivityTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const inactivityTime = 1 * 60 * 1000; // 5 minutes in milliseconds
 
   function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
@@ -21,11 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function logoutDueToInactivity() {
-    fetch('/public/logout.php?reason=inactivity', { method: 'POST' }).then(
-      () => {
-        window.location.href = '/public/login.php';
-      }
-    );
+    fetch('/logout.php?reason=inactivity', { method: 'POST' }).then(() => {
+      window.location.href = '/login.php';
+    });
   }
 
   // Reset timer on user activity
