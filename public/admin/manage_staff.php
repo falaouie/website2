@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../includes/functions.php';
-require_once '../includes/User.php';
-require_once '../includes/auth.php';
+require_once '../../includes/functions.php';
+require_once '../../includes/User.php';
+require_once '../../includes/auth.php';
 requireLogin();
 
 $user = new User(getDbConnection());
@@ -47,14 +47,14 @@ function getFormValue($field) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Staff - Silver System</title>
-    <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
     <div class="dashboard-container">
         <header>
             <div><h1>Manage Staff</h1></div>
             <div><a href="admin.php" class="btn btn-primary">Admin Dashboard</a></div>
-            <div><a href="logout.php" class="btn btn-danger">LOGOUT</a></div>
+            <div><a href="../logout.php" class="btn btn-danger">LOGOUT</a></div>
         </header>
 
         <?php if ($error): ?>
@@ -150,6 +150,6 @@ function getFormValue($field) {
             </tbody>
 </table>
     </div>
-    <script src="./assets/js/app.js"></script>
+    <script src="../assets/js/app.js"></script>
 </body>
 </html>

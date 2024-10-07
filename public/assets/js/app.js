@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Inactivity Timer
   let inactivityTimer;
-  const inactivityTime = 1 * 60 * 1000; // 5 minutes in milliseconds
+  const inactivityTime = 5 * 60 * 1000; // 5 minutes in milliseconds
 
   function resetInactivityTimer() {
     clearTimeout(inactivityTimer);

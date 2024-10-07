@@ -18,7 +18,7 @@ requireLogin();
         <header>
             <div><a href="../dashboard.php" class="btn btn-primary">DASHBOARD</a></div>
             <div><h1>Attendance</h1></div>
-            <div><a href="logout.php" class="btn btn-danger">LOGOUT</a></div>
+            <div><a href="../logout.php" class="btn btn-danger">LOGOUT</a></div>
         </header>
 
         <div>Attendance</div>
