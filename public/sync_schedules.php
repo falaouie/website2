@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 try {
     $conn = getDbConnection();
     
-    $query = "SELECT s.staff_id, st.first_name, st.last_name, s.work_day, s.start_time, s.end_time
+    $query = "SELECT s.staff_id, st.first_name, st.last_name, s.work_day, s.start_time, s.end_time, s.day_off
               FROM schedules s
               JOIN staff_tbl st ON s.staff_id = st.staff_id
               WHERE st.status = :status AND st.attendance_req = :attendance_req";
@@ -29,5 +29,4 @@ try {
 
 // Closing the connection
 $conn = null;
-
 ?>
