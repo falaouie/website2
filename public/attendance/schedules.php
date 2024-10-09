@@ -10,7 +10,11 @@ require_once '../../includes/auth.php';
 
 requireLogin();
 
-
+function formatTime($time) {
+    if (empty($time)) return '';
+    $timestamp = strtotime($time);
+    return date('h:i A', $timestamp);
+}
 
 $user = new User(getDbConnection());
 
@@ -190,89 +194,47 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                 </thead>
 
                 <tbody>
-
                     <?php foreach ($currentSchedules as $staff): ?>
-
                         <tr>
-
                             <td class="staff-name">
-
                                 <label>
-
                                     <input type="checkbox" name="staff[]" value="<?php echo $staff['staff_id']; ?>" class="staff-checkbox">
-
                                     <?php echo htmlspecialchars($staff['name']); ?>
-
                                 </label>
-
                             </td>
-
                             <?php foreach ($days as $index => $day): ?>
-
                                 <?php
-
                                 $schedule = $staff['schedule'][$index] ?? null;
-
                                 $isOpen = $schedule['open_schedule'] ?? false;
-
                                 $isDayOff = $schedule['day_off'] ?? false;
-
                                 $startTime = $schedule['start'] ?? '';
-
                                 $endTime = $schedule['end'] ?? '';
-
                                 ?>
-
                                 <td <?php echo $isDayOff ? 'class="day-off"' : ''; ?>>
-
                                     <?php
-
                                     if ($isOpen) {
-
                                         echo "Open";
-
                                     } elseif ($isDayOff) {
-
                                         echo "DAY OFF";
-
                                     } else {
-
-                                        echo htmlspecialchars($startTime);
-
+                                        echo htmlspecialchars(formatTime($startTime));
                                     }
-
                                     ?>
-
                                 </td>
-
                                 <td <?php echo $isDayOff ? 'class="day-off"' : ''; ?>>
-
                                     <?php
-
                                     if ($isOpen) {
-
                                         echo "Open";
-
                                     } elseif ($isDayOff) {
-
                                         echo "DAY OFF";
-
                                     } else {
-
-                                        echo htmlspecialchars($endTime);
-
+                                        echo htmlspecialchars(formatTime($endTime));
                                     }
-
                                     ?>
-
                                 </td>
-
                             <?php endforeach; ?>
-
                         </tr>
-
                     <?php endforeach; ?>
-
                 </tbody>
 
             </table>
