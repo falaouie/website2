@@ -286,29 +286,64 @@ document.addEventListener('DOMContentLoaded', function() {
         const staffSelected = Array.from(staffCheckboxes).some(cb => cb.checked);
         const daySelected = Array.from(dayCheckboxes).some(cb => cb.checked);
         const openSchedule = document.querySelector('input[name="open_schedule"]:checked').value === '1';
+        const dayOffNoOption = document.querySelector('input[name="day_off"][value="0"]');
+        const dayOffYesOption = document.querySelector('input[name="day_off"][value="1"]');
         const dayOff = document.querySelector('input[name="day_off"]:checked').value === '1';
+        const workInInput = document.querySelector('input[name="work_in"]');
+        const workOffInput = document.querySelector('input[name="work_off"]');
 
         if (staffSelected && daySelected) {
             scheduleOptions.style.display = 'block';
-            
+
             if (openSchedule) {
+                // Set "No" as checked when openSchedule is true
+                dayOffNoOption.checked = true;
+                dayOffYesOption.disabled = true;
+                dayOffNoOption.disabled = true;
+
+                // Clear time inputs
+                workInInput.value = '';
+                workOffInput.value = '';
+
                 dayOffOption.style.display = 'none';
                 timeInputs.style.display = 'none';
                 submitButton.style.display = 'block';
             } else {
+                // Enable the day_off options when not in openSchedule
+                dayOffYesOption.disabled = false;
+                dayOffNoOption.disabled = false;
+
                 dayOffOption.style.display = 'inline-block';
                 if (dayOff) {
                     timeInputs.style.display = 'none';
                     submitButton.style.display = 'block';
                 } else {
                     timeInputs.style.display = 'inline-block';
-                    submitButton.style.display = workIn.value && workOff.value ? 'block' : 'none';
+
+                    // Validate time inputs
+                    if (workInInput.value && workOffInput.value) {
+                        const workInTime = new Date(`1970-01-01T${workInInput.value}:00`);
+                        const workOffTime = new Date(`1970-01-01T${workOffInput.value}:00`);
+                        
+                        // Check if work off time is earlier than work in time
+                        if (workOffTime <= workInTime) {
+                            alert('Work OFF time must be later than Work IN time.');
+                            submitButton.style.display = 'none';
+                        } else {
+                            submitButton.style.display = 'block';
+                        }
+                    } else {
+                        submitButton.style.display = 'none';
+                    }
                 }
             }
         } else {
             scheduleOptions.style.display = 'none';
         }
     }
+
+
+
 
     checkAllStaff.addEventListener('change', function() {
         staffCheckboxes.forEach(cb => cb.checked = this.checked);
