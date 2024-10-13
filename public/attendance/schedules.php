@@ -89,6 +89,94 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
             margin-top: 10px;
         }
 
+        /* Style for the container to center elements */
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Style for the schedule options */
+        .schedule-option {
+            background: orange;
+            padding: 10px 20px;
+            outline: 1px solid black;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            user-select: none;
+        }
+
+        /* Initially selected option will be limegreen */
+        .schedule-option.selected {
+            background: limegreen;
+        }
+
+        /* Hide the default radio button input */
+        input[type="radio"] {
+            display: none;
+        }
+
+        #fixedScheduleForm, #tempScheduleForm {
+            display: none;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        
+
+        .custom-time {
+            display: inline-block;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .custom-time input[type="time"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: orange;
+            transition: background-color 0.3s;
+        }
+
+        .custom-time input[type="time"]:not(:placeholder-shown) {
+            background-color: limegreen;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .radio-group-label {
+            margin-right: 10px;
+            background-color: none;
+            font-weight: bold;
+        }
+
+        .custom-radio {
+            display: inline-block;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .custom-radio input[type="radio"] {
+            display: none;
+        }
+
+        .custom-radio .radio-label {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: orange;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .custom-radio input[type="radio"]:checked + .radio-label {
+            background-color: limegreen;
+        }
     </style>
 
 </head>
@@ -133,9 +221,21 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
         <?php endif; ?>
 
+        <div class="center-container">
+            <!-- Custom radio buttons for schedule options -->
+            <div id="fixedSchdDiv" class="schedule-option">
+                <strong><label for="fixedSchd">FIXED</label></strong>
+                <input class="screen-only" id="fixedSchd" type="radio" name="staffSchd" value="fixed">
+            </div>
+            <div id="tempSchdDiv" class="schedule-option">
+                <strong><label for="tempSchd">TEMPORARY</label></strong>
+                <input class="screen-only" id="tempSchd" type="radio" name="staffSchd" value="temp">
+            </div>
+
+        </div>
 
 
-        <form id="scheduleForm" method="post" action="">
+        <form id="fixedScheduleForm" method="post" action="">
 
             <table class="schedule-table">
 
@@ -210,7 +310,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                                 $startTime = $schedule['start'] ?? '';
                                 $endTime = $schedule['end'] ?? '';
                                 ?>
-                                <td <?php echo $isDayOff ? 'class="day-off"' : ''; ?>>
+                                <td <?php echo $isDayOff ? 'class="day-off"' : ($isOpen ? 'class="open-schedule"' : ''); ?>>
                                     <?php
                                     if ($isOpen) {
                                         echo "Open";
@@ -221,7 +321,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                                     }
                                     ?>
                                 </td>
-                                <td <?php echo $isDayOff ? 'class="day-off"' : ''; ?>>
+                                <td <?php echo $isDayOff ? 'class="day-off"' : ($isOpen ? 'class="open-schedule"' : ''); ?>>
                                     <?php
                                     if ($isOpen) {
                                         echo "Open";
@@ -242,144 +342,303 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
 
             <div id="scheduleOptions" class="hidden">
-                <div>
-                    <label>Open Schedule:</label>
-                    <label><input type="radio" name="open_schedule" value="0" checked> No</label>
-                    <label><input type="radio" name="open_schedule" value="1"> Yes</label>
+                <div class="radio-group">
+                    <span class="radio-group-label">Open Schedule:</span>
+                    <label class="custom-radio">
+                        <input type="radio" name="open_schedule" value="0" checked>
+                        <span class="radio-label">No</span>
+                    </label>
+                    <label class="custom-radio">
+                        <input type="radio" name="open_schedule" value="1">
+                        <span class="radio-label">Yes</span>
+                    </label>
                 </div>
-                <div id="dayOffOption">
-                    <label>Day OFF:</label>
-                    <label><input type="radio" name="day_off" value="0" checked> No</label>
-                    <label><input type="radio" name="day_off" value="1"> Yes</label>
+                <div id="dayOffOption" class="radio-group">
+                    <span class="radio-group-label">Day OFF:</span>
+                    <label class="custom-radio">
+                        <input type="radio" name="day_off" value="0" checked>
+                        <span class="radio-label">No</span>
+                    </label>
+                    <label class="custom-radio">
+                        <input type="radio" name="day_off" value="1">
+                        <span class="radio-label">Yes</span>
+                    </label>
                 </div>
                 <div id="timeInputs">
-                    <label>Work IN: <input type="time" name="work_in"></label>
-                    <label>Work OFF: <input type="time" name="work_off"></label>
+                    <label class="custom-time">
+                        Work IN: <input type="time" name="work_in" placeholder=" ">
+                    </label>
+                    <label class="custom-time">
+                        Work OFF: <input type="time" name="work_off" placeholder=" ">
+                    </label>
                 </div>
                 <button type="submit" id="submitButton" class="btn btn-primary hidden">Update Schedules</button>
             </div>
 
         </form>
 
+        <form id="tempScheduleForm" method="post" action="">
+           
+           <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th colspan="7">
+                            <label>
+
+                                Select Date<input type="date" id="tempDate">
+
+                            </label>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            &nbsp;
+                        </th>
+                        <th colspan="3">
+                            Selected Date
+                        </th>
+                        <th colspan="2">
+                            Selected Day Fixed Schedule
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Staff Name</th>
+                        <th><input type="checkbox" id="checkAllStaff"> All</th>
+                        <th>From Time</th>
+                        <th>To Time</th>
+                        <th>Reason</th>
+                        <th>From Time</th>
+                        <th>To Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Fatima Hindawi</td>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Halima Braiki</td>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Hanan Ajami</td>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Khaldiyah H</td>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Mariam Crumbs</td>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Riwa Saade</td>
+                        <td><input type="checkbox"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>                           
+        </form>
+
+        
+
     </div>
 
 
 
+
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const form = document.getElementById('fixedScheduleForm');
+            const checkAllStaff = document.getElementById('checkAllStaff');
+            const checkAllDays = document.getElementById('checkAllDays');
+            const staffCheckboxes = document.querySelectorAll('.staff-checkbox');
+            const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+            const scheduleOptions = document.getElementById('scheduleOptions');
+            const openScheduleRadios = document.querySelectorAll('input[name="open_schedule"]');
+            const dayOffOption = document.getElementById('dayOffOption');
+            const dayOffRadios = document.querySelectorAll('input[name="day_off"]');
+            const timeInputs = document.getElementById('timeInputs');
+            const workIn = document.querySelector('input[name="work_in"]');
+            const workOff = document.querySelector('input[name="work_off"]');
+            const submitButton = document.getElementById('submitButton');
 
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('scheduleForm');
-    const checkAllStaff = document.getElementById('checkAllStaff');
-    const checkAllDays = document.getElementById('checkAllDays');
-    const staffCheckboxes = document.querySelectorAll('.staff-checkbox');
-    const dayCheckboxes = document.querySelectorAll('.day-checkbox');
-    const scheduleOptions = document.getElementById('scheduleOptions');
-    const openScheduleRadios = document.querySelectorAll('input[name="open_schedule"]');
-    const dayOffOption = document.getElementById('dayOffOption');
-    const dayOffRadios = document.querySelectorAll('input[name="day_off"]');
-    const timeInputs = document.getElementById('timeInputs');
-    const workIn = document.querySelector('input[name="work_in"]');
-    const workOff = document.querySelector('input[name="work_off"]');
-    const submitButton = document.getElementById('submitButton');
+            // Helper functions
+            function isAnyChecked(checkboxes) {
+                return Array.from(checkboxes).some(cb => cb.checked);
+            }
 
-    function checkSelections() {
-        const staffSelected = Array.from(staffCheckboxes).some(cb => cb.checked);
-        const daySelected = Array.from(dayCheckboxes).some(cb => cb.checked);
-        const openSchedule = document.querySelector('input[name="open_schedule"]:checked').value === '1';
-        const dayOffNoOption = document.querySelector('input[name="day_off"][value="0"]');
-        const dayOffYesOption = document.querySelector('input[name="day_off"][value="1"]');
-        const dayOff = document.querySelector('input[name="day_off"]:checked').value === '1';
-        const workInInput = document.querySelector('input[name="work_in"]');
-        const workOffInput = document.querySelector('input[name="work_off"]');
+            function areAllChecked(checkboxes) {
+                return Array.from(checkboxes).every(cb => cb.checked);
+            }
 
-        if (staffSelected && daySelected) {
-            scheduleOptions.style.display = 'block';
+            function setAllCheckboxes(checkboxes, checked) {
+                checkboxes.forEach(cb => cb.checked = checked);
+            }
 
-            if (openSchedule) {
-                // Set "No" as checked when openSchedule is true
-                dayOffNoOption.checked = true;
-                dayOffYesOption.disabled = true;
-                dayOffNoOption.disabled = true;
-
-                // Clear time inputs
-                workInInput.value = '';
-                workOffInput.value = '';
-
-                dayOffOption.style.display = 'none';
-                timeInputs.style.display = 'none';
-                submitButton.style.display = 'block';
-            } else {
-                // Enable the day_off options when not in openSchedule
-                dayOffYesOption.disabled = false;
-                dayOffNoOption.disabled = false;
-
-                dayOffOption.style.display = 'inline-block';
-                if (dayOff) {
-                    timeInputs.style.display = 'none';
-                    submitButton.style.display = 'block';
-                } else {
-                    timeInputs.style.display = 'inline-block';
-
-                    // Validate time inputs
-                    if (workInInput.value && workOffInput.value) {
-                        const workInTime = new Date(`1970-01-01T${workInInput.value}:00`);
-                        const workOffTime = new Date(`1970-01-01T${workOffInput.value}:00`);
-                        
-                        // Check if work off time is earlier than work in time
-                        if (workOffTime <= workInTime) {
-                            alert('Work OFF time must be later than Work IN time.');
-                            submitButton.style.display = 'none';
-                        } else {
-                            submitButton.style.display = 'block';
-                        }
+            function updateRadioStyling() {
+                document.querySelectorAll('.custom-radio input[type="radio"]').forEach(radio => {
+                    const label = radio.nextElementSibling;
+                    if (radio.checked) {
+                        label.style.backgroundColor = 'limegreen';
                     } else {
-                        submitButton.style.display = 'none';
+                        label.style.backgroundColor = 'white';
+                    }
+                });
+            }
+
+            function updateTimeInputStyling() {
+                document.querySelectorAll('.custom-time input[type="time"]').forEach(input => {
+                    input.style.backgroundColor = input.value ? 'limegreen' : 'orange';
+                });
+            }
+
+            // Main logic
+            function checkSelections() {
+                const staffSelected = isAnyChecked(staffCheckboxes);
+                const daySelected = isAnyChecked(dayCheckboxes);
+                const openSchedule = document.querySelector('input[name="open_schedule"]:checked').value === '1';
+                const dayOff = document.querySelector('input[name="day_off"]:checked').value === '1';
+
+                scheduleOptions.style.display = staffSelected && daySelected ? 'block' : 'none';
+
+                if (staffSelected && daySelected) {
+                    const dayOffNoOption = document.querySelector('input[name="day_off"][value="0"]');
+                    const dayOffYesOption = document.querySelector('input[name="day_off"][value="1"]');
+
+                    if (openSchedule) {
+                        dayOffNoOption.checked = true;
+                        dayOffYesOption.disabled = dayOffNoOption.disabled = true;
+                        workIn.value = workOff.value = '';
+                        dayOffOption.style.display = timeInputs.style.display = 'none';
+                        submitButton.style.display = 'block';
+                    } else {
+                        dayOffYesOption.disabled = dayOffNoOption.disabled = false;
+                        dayOffOption.style.display = 'inline-block';
+
+                        if (dayOff) {
+                            timeInputs.style.display = 'none';
+                            submitButton.style.display = 'block';
+                            workIn.value = workOff.value = '';
+                        } else {
+                            timeInputs.style.display = 'inline-block';
+                            validateTimeInputs();
+                        }
                     }
                 }
+
+                updateRadioStyling();
+                updateTimeInputStyling();
             }
-        } else {
-            scheduleOptions.style.display = 'none';
-        }
-    }
 
+            function validateTimeInputs() {
+                if (workIn.value && workOff.value) {
+                    const workInTime = new Date(`1970-01-01T${workIn.value}:00`);
+                    const workOffTime = new Date(`1970-01-01T${workOff.value}:00`);
+                    
+                    if (workOffTime <= workInTime) {
+                        alert('Work OFF time must be later than Work IN time.');
+                        submitButton.style.display = 'none';
+                    } else {
+                        submitButton.style.display = 'block';
+                    }
+                } else {
+                    submitButton.style.display = 'none';
+                }
+            }
 
+            // Event listeners
+            checkAllStaff.addEventListener('change', function() {
+                setAllCheckboxes(staffCheckboxes, this.checked);
+                checkSelections();
+            });
 
+            checkAllDays.addEventListener('change', function() {
+                setAllCheckboxes(dayCheckboxes, this.checked);
+                checkSelections();
+            });
 
-    checkAllStaff.addEventListener('change', function() {
-        staffCheckboxes.forEach(cb => cb.checked = this.checked);
-        checkSelections();
-    });
+            staffCheckboxes.forEach(cb => cb.addEventListener('change', function() {
+                checkAllStaff.checked = areAllChecked(staffCheckboxes);
+                checkSelections();
+            }));
 
-    checkAllDays.addEventListener('change', function() {
-        dayCheckboxes.forEach(cb => cb.checked = this.checked);
-        checkSelections();
-    });
+            dayCheckboxes.forEach(cb => cb.addEventListener('change', function() {
+                checkAllDays.checked = areAllChecked(dayCheckboxes);
+                checkSelections();
+            }));
 
-    staffCheckboxes.forEach(cb => cb.addEventListener('change', function() {
-        checkAllStaff.checked = Array.from(staffCheckboxes).every(cb => cb.checked);
-        checkSelections();
-    }));
+            openScheduleRadios.forEach(radio => radio.addEventListener('change', checkSelections));
+            dayOffRadios.forEach(radio => radio.addEventListener('change', checkSelections));
+            workIn.addEventListener('input', checkSelections);
+            workOff.addEventListener('input', checkSelections);
 
-    dayCheckboxes.forEach(cb => cb.addEventListener('change', function() {
-        checkAllDays.checked = Array.from(dayCheckboxes).every(cb => cb.checked);
-        checkSelections();
-    }));
+            form.addEventListener('submit', function(e) {
+                // Additional form validation can be added here if needed
+            });
 
-    openScheduleRadios.forEach(radio => radio.addEventListener('change', checkSelections));
-    dayOffRadios.forEach(radio => radio.addEventListener('change', checkSelections));
+            // Initialize page
+            checkSelections();
 
-    workIn.addEventListener('input', checkSelections);
-    workOff.addEventListener('input', checkSelections);
+            // Schedule option selection handling
+            const fixedScheduleForm = document.getElementById('fixedScheduleForm');
+            const tempScheduleForm = document.getElementById('tempScheduleForm');
 
-    form.addEventListener('submit', function(e) {
-        // Additional form validation can be added here if needed
-    });
+            function selectOption(optionId) {
+                document.querySelectorAll('.schedule-option').forEach(option => {
+                    option.classList.remove('selected');
+                    option.style.backgroundColor = 'white';
+                });
 
-    // Initial check
-    checkSelections();
-});
+                const selectedOption = document.getElementById(optionId + 'Div');
+                selectedOption.classList.add('selected');
+                selectedOption.style.backgroundColor = 'limegreen';
+                document.getElementById(optionId).checked = true;
 
+                fixedScheduleForm.style.display = optionId === 'fixedSchd' ? 'block' : 'none';
+                tempScheduleForm.style.display = optionId === 'tempSchd' ? 'block' : 'none';
+            }
+
+            document.getElementById('fixedSchdDiv').addEventListener('click', () => selectOption('fixedSchd'));
+            document.getElementById('tempSchdDiv').addEventListener('click', () => selectOption('tempSchd'));
+
+            // Initially hide both forms
+            fixedScheduleForm.style.display = 'none';
+            tempScheduleForm.style.display = 'none';
+        });
     </script>
+
 
 </body>
 

@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 try {
     $conn = getDbConnection();
     
-    $query = "SELECT staff_id, date, scheduled_in, scheduled_out, day_off, reason FROM temp_schedule";
+    $query = "SELECT staff_id, date, scheduled_in, scheduled_out, day_off, open_schedule, reason FROM temp_schedule";
     $stmt = $conn->prepare($query);
     
     $stmt->execute();
