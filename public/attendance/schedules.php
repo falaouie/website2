@@ -10,6 +10,15 @@ require_once '../../includes/auth.php';
 
 requireLogin();
 
+// Check if a date has been posted or stored in the session
+if (isset($_POST['temp_date'])) {
+    $selectedDate = $_POST['temp_date'];
+    $_SESSION['selected_date'] = $selectedDate;
+} else {
+    // Fall back to session value or today if nothing is posted
+    $selectedDate = $_SESSION['selected_date'] ?? date('Y-m-d');
+}
+
 function formatTime($time) {
     if (empty($time)) return '';
     $timestamp = strtotime($time);
@@ -18,20 +27,17 @@ function formatTime($time) {
 
 $user = new User(getDbConnection());
 
-$staffWithAttendance = $user->getStaffWithAttendanceRequired();
+// $staffWithAttendance = $user->getStaffWithAttendanceRequired();
 
 $currentSchedules = $user->getCurrentFixedSchedules();
+$fixedSchedules = $user->getFixedSchedulesForDay($selectedDate);
+$temporarySchedules = $user->getTemporarySchedules($selectedDate);
 
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+// Handle fixed schedule form submission separately
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fixed_schedule_update'])) {
     $result = $user->updateFixedSchedule($_POST);
-
     $message = $result === true ? "Fixed schedules updated successfully." : "Error: " . $result;
-
     $currentSchedules = $user->getCurrentFixedSchedules(); // Refresh schedules after update
-
 }
 
 
@@ -65,10 +71,6 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
         .schedule-table th { background-color: #f2f2f2; }
 
         .staff-name { text-align: left; }
-
-        .day-off { color: red; }
-
-        .hidden { display: none; }
 
         #scheduleOptions > div {
             display: inline-block;
@@ -236,6 +238,8 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
 
         <form id="fixedScheduleForm" method="post" action="">
+            <!-- Add a hidden input to indicate this is a schedule update form -->
+            <input type="hidden" name="fixed_schedule_update" value="1">
 
             <table class="schedule-table">
 
@@ -310,29 +314,27 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                                 $startTime = $schedule['start'] ?? '';
                                 $endTime = $schedule['end'] ?? '';
                                 ?>
-                                <td <?php echo $isDayOff ? 'class="day-off"' : ($isOpen ? 'class="open-schedule"' : ''); ?>>
-                                    <?php
-                                    if ($isOpen) {
-                                        echo "Open";
-                                    } elseif ($isDayOff) {
-                                        echo "DAY OFF";
-                                    } else {
-                                        echo htmlspecialchars(formatTime($startTime));
-                                    }
-                                    ?>
-                                </td>
-                                <td <?php echo $isDayOff ? 'class="day-off"' : ($isOpen ? 'class="open-schedule"' : ''); ?>>
-                                    <?php
-                                    if ($isOpen) {
-                                        echo "Open";
-                                    } elseif ($isDayOff) {
-                                        echo "DAY OFF";
-                                    } else {
-                                        echo htmlspecialchars(formatTime($endTime));
-                                    }
-                                    ?>
-                                </td>
+                                
+                                <?php if ($isOpen || $isDayOff): ?>
+                                    <td colspan="2" <?php echo $isDayOff ? 'class="redText"' : ($isOpen ? 'class="greenText"' : ''); ?>>
+                                        <?php
+                                        if ($isOpen) {
+                                            echo "Open";
+                                        } elseif ($isDayOff) {
+                                            echo "DAY OFF";
+                                        }
+                                        ?>
+                                    </td>
+                                <?php else: ?>
+                                    <td>
+                                        <?php echo htmlspecialchars(formatTime($startTime)); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo htmlspecialchars(formatTime($endTime)); ?>
+                                    </td>
+                                <?php endif; ?>
                             <?php endforeach; ?>
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -377,28 +379,25 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
         </form>
 
+        <form id="tempDateForm" action="" method="post">
+            <div>
+                <input type="date" id="tempDate" name="temp_date" value="<?php echo htmlspecialchars($selectedDate); ?>">
+                <button type="submit" id="tempLoadScheduleButton">Load Schedule</button>
+            </div>
+        </form>
         <form id="tempScheduleForm" method="post" action="">
            
            <table class="schedule-table">
                 <thead>
                     <tr>
-                        <th colspan="7">
-                            <label>
-
-                                Select Date<input type="date" id="tempDate">
-
-                            </label>
-                        </th>
-                    </tr>
-                    <tr>
                         <th colspan="2">
                             &nbsp;
                         </th>
-                        <th colspan="3">
-                            Selected Date
+                        <th class="greenText" colspan="3">
+                        <?php echo date('l d/m/Y', strtotime($selectedDate)); ?>
                         </th>
                         <th colspan="2">
-                            Selected Day Fixed Schedule
+                            Fixed Schedule
                         </th>
                     </tr>
                     <tr>
@@ -412,60 +411,109 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Fatima Hindawi</td>
-                        <td><input type="checkbox"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Halima Braiki</td>
-                        <td><input type="checkbox"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Hanan Ajami</td>
-                        <td><input type="checkbox"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Khaldiyah H</td>
-                        <td><input type="checkbox"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Mariam Crumbs</td>
-                        <td><input type="checkbox"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Riwa Saade</td>
-                        <td><input type="checkbox"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                    <?php
+                        
+                        foreach ($fixedSchedules as $schedule): 
+                            $staffId = $schedule['staff_id'];
+                            $tempSchedule = $temporarySchedules[$staffId] ?? null; // Get temp schedule for this staff ID, if available
+                        ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($schedule['first_name'] . ' ' . $schedule['last_name']); ?></td>
+                                <th><input type="checkbox"></th> <!-- check staff -->
+
+                                <!-- Temp scheduled_in and scheduled_out or merge for Day Off/Open -->
+                                <?php if ($tempSchedule): ?>
+                                    <?php if ($tempSchedule['day_off'] == 1 || $tempSchedule['open_schedule'] == 1): ?>
+                                        <!-- Merge the tds for Day Off or Open -->
+                                        <td colspan="2">
+                                            <?php
+                                            if ($tempSchedule['day_off'] == 1) {
+                                                echo "DAY OFF";
+                                            } elseif ($tempSchedule['open_schedule'] == 1) {
+                                                echo "Open";
+                                            }
+                                            ?>
+                                        </td>
+                                    <?php else: ?>
+                                        <!-- Show scheduled_in and scheduled_out in separate tds -->
+                                        <td>
+                                        <?php
+                                            if (!empty($tempSchedule['scheduled_in'])) {
+                                                $scheduledIn = date('g:i A', strtotime($tempSchedule['scheduled_in']));
+                                                echo htmlspecialchars($scheduledIn);
+                                            } else {
+                                                echo ''; // Leave blank if no scheduled_out
+                                            }
+                                        ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                                if (!empty($tempSchedule['scheduled_out'])) {
+                                                    $scheduledOut = date('g:i A', strtotime($tempSchedule['scheduled_out']));
+                                                    echo htmlspecialchars($scheduledOut);
+                                                } else {
+                                                    echo ''; // Leave blank if no scheduled_out
+                                                }
+                                            ?>
+                                        </td>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <!-- No temp schedule, leave tds empty -->
+                                    <td></td>
+                                    <td></td>
+                                <?php endif; ?>
+
+                                <!-- Reason text -->
+                                <td>
+                                    <?php
+                                    if ($tempSchedule && !empty($tempSchedule['reason_text'])) {
+                                        echo htmlspecialchars($tempSchedule['reason_text']);
+                                    } else {
+                                        echo ''; // leave empty if no reason
+                                    }
+                                    ?>
+                                </td>
+                                
+                                <!-- Start time, day off, or open for fixed schedule -->
+                                <td>
+                                    <?php
+                                    if ($schedule['open_schedule'] == 1) {
+                                        echo "Open";
+                                    } elseif ($schedule['day_off'] == 1) {
+                                        echo "DAY OFF";
+                                    } else {
+                                        if (!empty($schedule['start_time'])) {
+                                            $startTime = date('g:i A', strtotime($schedule['start_time']));
+                                            echo htmlspecialchars($startTime);
+                                        } else {
+                                            echo ''; // Leave blank if no scheduled_out
+                                        }
+                                    }
+                                    ?>
+                                </td>
+
+                                <!-- End time, day off, or open for fixed schedule -->
+                                <td>
+                                    <?php
+                                        if ($schedule['open_schedule'] == 1) {
+                                            echo "Open";
+                                        } elseif ($schedule['day_off'] == 1) {
+                                            echo "DAY OFF";
+                                        } else {
+                                            if (!empty($schedule['end_time'])) {
+                                                $endTime = date('g:i A', strtotime($schedule['end_time']));
+                                                echo htmlspecialchars($endTime);
+                                            } else {
+                                                echo ''; // Leave blank if no scheduled_out
+                                            }
+                                        }
+                                    ?>
+                                </td>
+                            </tr>
+                    <?php endforeach; ?>
+
+
+
                 </tbody>
             </table>                           
         </form>
@@ -628,14 +676,16 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
                 fixedScheduleForm.style.display = optionId === 'fixedSchd' ? 'block' : 'none';
                 tempScheduleForm.style.display = optionId === 'tempSchd' ? 'block' : 'none';
+                tempDateForm.style.display = optionId === 'tempSchd' ? 'block' : 'none';
             }
 
             document.getElementById('fixedSchdDiv').addEventListener('click', () => selectOption('fixedSchd'));
             document.getElementById('tempSchdDiv').addEventListener('click', () => selectOption('tempSchd'));
 
-            // Initially hide both forms
+            // Initially hide all forms
             fixedScheduleForm.style.display = 'none';
             tempScheduleForm.style.display = 'none';
+            tempDateForm.style.display = 'none';
         });
     </script>
 

@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 $tempSchedules = $user->getTemporarySchedules($selectedDate);
-$fixedSchedules = $user->getFixedSchedulesForDate($selectedDate);
+$fixedSchedules = $user->getFixedSchedulesForDay($selectedDate);
 $reasons = $user->getReasons();
 
 ?>

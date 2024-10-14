@@ -1031,8 +1031,10 @@ class User {
         return $schedules;
     }
 
-    public function getFixedSchedulesForDate($date) {
-        $dayOfWeek = date('w', strtotime($date));
+    public function getFixedSchedulesForDay($day) {
+        $dayOfWeek = date('w', strtotime($day));
+        // Adjust for systems where 0 is Sunday (shift index)
+        $dayOfWeek = (date('w', strtotime($day)) + 6) % 7;
         $query = "SELECT s.staff_id, s.first_name, s.last_name, 
                          sch.start_time, sch.end_time, sch.day_off, sch.open_schedule
                   FROM staff_tbl s
