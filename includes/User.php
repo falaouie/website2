@@ -1061,24 +1061,27 @@ class User {
         try {
             $date = $data['temp_date'];
             $staffIds = $data['temp_staff'] ?? [];
-
+    
             foreach ($staffIds as $staffId) {
-                $scheduledIn = $data['work_in'] ?? null;
-                $scheduledOut = $data['work_off'] ?? null;
-                $dayOff = isset($data['day_off']) ? 1 : 0;
-                $openSchedule = isset($data['open_schedule']) ? 1 : 0;
-                $reasonId = $data['temp_reason'] ?? null;
-
-                $stmt = $this->conn->prepare("INSERT INTO temp_schedule 
-                    (staff_id, date, scheduled_in, scheduled_out, day_off, open_schedule, reason_id)
-                    VALUES (:staff_id, :date, :scheduled_in, :scheduled_out, :day_off, :open_schedule, :reason_id)
-                    ON DUPLICATE KEY UPDATE 
-                    scheduled_in = VALUES(scheduled_in),
-                    scheduled_out = VALUES(scheduled_out),
-                    day_off = VALUES(day_off),
-                    open_schedule = VALUES(open_schedule),
-                    reason_id = VALUES(reason_id)");
+                $scheduledIn = !empty($data['work_in']) ? $data['work_in'] : null;
+                $scheduledOut = !empty($data['work_off']) ? $data['work_off'] : null;
                 
+                // Handle day_off and open_schedule explicitly
+                $dayOff = isset($data['day_off']) && $data['day_off'] == 1 ? 1 : 0;
+                $openSchedule = isset($data['open_schedule']) && $data['open_schedule'] == 1 ? 1 : 0;
+    
+                $reasonId = $data['temp_reason'] ?? null;
+    
+                $stmt = $this->conn->prepare("INSERT INTO temp_schedule 
+                (staff_id, date, scheduled_in, scheduled_out, day_off, open_schedule, reason_id)
+                VALUES (:staff_id, :date, :scheduled_in, :scheduled_out, :day_off, :open_schedule, :reason_id)
+                ON DUPLICATE KEY UPDATE 
+                scheduled_in = VALUES(scheduled_in),
+                scheduled_out = VALUES(scheduled_out),
+                day_off = VALUES(day_off),
+                open_schedule = VALUES(open_schedule),
+                reason_id = VALUES(reason_id)");
+    
                 $stmt->bindParam(':staff_id', $staffId);
                 $stmt->bindParam(':date', $date);
                 $stmt->bindParam(':scheduled_in', $scheduledIn);
@@ -1086,7 +1089,7 @@ class User {
                 $stmt->bindParam(':day_off', $dayOff, PDO::PARAM_INT);
                 $stmt->bindParam(':open_schedule', $openSchedule, PDO::PARAM_INT);
                 $stmt->bindParam(':reason_id', $reasonId);
-                
+    
                 $stmt->execute();
             }
             
@@ -1097,6 +1100,7 @@ class User {
             return "Error updating temporary schedule: " . $e->getMessage();
         }
     }
+    
 
     public function getReasons() {
 
