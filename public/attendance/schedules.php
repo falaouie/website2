@@ -32,12 +32,19 @@ $user = new User(getDbConnection());
 $currentSchedules = $user->getCurrentFixedSchedules();
 $fixedSchedules = $user->getFixedSchedulesForDay($selectedDate);
 $temporarySchedules = $user->getTemporarySchedules($selectedDate);
-
+$reasons = $user->getReasons();
 // Handle fixed schedule form submission separately
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fixed_schedule_update'])) {
     $result = $user->updateFixedSchedule($_POST);
     $message = $result === true ? "Fixed schedules updated successfully." : "Error: " . $result;
     $currentSchedules = $user->getCurrentFixedSchedules(); // Refresh schedules after update
+}
+
+// Handle fixed schedule form submission separately
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['temp_schedule_update'])) {
+    $result = $user->updateTemporarySchedule($_POST);
+    $message = $result === true ? "Temporary schedules updated successfully." : "Error: " . $result;
+    $temporarySchedules = $user->getTemporarySchedules($selectedDate);// Refresh temporary schedule after update
 }
 
 
@@ -385,8 +392,11 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                 <button type="submit" id="tempLoadScheduleButton">Load Schedule</button>
             </div>
         </form>
+        
         <form id="tempScheduleForm" method="post" action="">
-           
+           <!-- Add a hidden input to indicate this is a schedule update form -->
+           <input type="hidden" name="temp_schedule_update" value="1">
+           <input type="hidden" name="temp_date" value="<?php echo htmlspecialchars($selectedDate); ?>">
            <table class="schedule-table">
                 <thead>
                     <tr>
@@ -402,7 +412,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                     </tr>
                     <tr>
                         <th>Staff Name</th>
-                        <th><input type="checkbox" id="checkAllStaff"> All</th>
+                        <th><input type="checkbox" id="tempCheckAllStaff"> All</th>
                         <th>From Time</th>
                         <th>To Time</th>
                         <th>Reason</th>
@@ -419,7 +429,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                         ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($schedule['first_name'] . ' ' . $schedule['last_name']); ?></td>
-                                <th><input type="checkbox"></th> <!-- check staff -->
+                                <td><input type="checkbox" class="temp-staff-checkbox" id="tempStaff<?php echo $staffId; ?>" name="temp_staff[]" value="<?php echo $staffId; ?>"></td>
 
                                 <!-- Temp scheduled_in and scheduled_out or merge for Day Off/Open -->
                                 <?php if ($tempSchedule): ?>
@@ -513,7 +523,55 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
 
                 </tbody>
-            </table>                           
+            </table>
+            
+            <div id="tempScheduleOptions" class="hidden">
+                <div class="radio-group">
+                    <span class="radio-group-label">Open Schedule:</span>
+                    <label class="custom-radio">
+                        <input type="radio" name="open_schedule" value="0" checked>
+                        <span class="radio-label">No</span>
+                    </label>
+                    <label class="custom-radio">
+                        <input type="radio" name="open_schedule" value="1">
+                        <span class="radio-label">Yes</span>
+                    </label>
+                </div>
+                <div id="tempDayOffOption" class="radio-group">
+                    <span class="radio-group-label">Day OFF:</span>
+                    <label class="custom-radio">
+                        <input type="radio" name="day_off" value="0" checked>
+                        <span class="radio-label">No</span>
+                    </label>
+                    <label class="custom-radio">
+                        <input type="radio" name="day_off" value="1">
+                        <span class="radio-label">Yes</span>
+                    </label>
+                </div>
+                <div id="tempTimeInputs">
+                    <label class="custom-time">
+                        Work IN: <input type="time" name="work_in" placeholder=" ">
+                    </label>
+                    <label class="custom-time">
+                        Work OFF: <input type="time" name="work_off" placeholder=" ">
+                    </label>
+                </div>
+                <div>
+                <div>
+                    <label for="temp_reason">Reason:</label>
+                    <select name="temp_reason" id="temp_reason">
+                        <option value="">Select Reason</option>
+                        <?php foreach ($reasons as $reason) : ?>
+                            <option value="<?php echo $reason['id']; ?>"><?php echo htmlspecialchars($reason['text']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                </div>
+                
+                <button type="submit" id="tempSubmitButton" class="btn btn-primary hidden">Update Schedules</button>
+            </div>
+
         </form>
 
         
@@ -684,7 +742,115 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
             fixedScheduleForm.style.display = 'none';
             tempScheduleForm.style.display = 'none';
             tempDateForm.style.display = 'none';
+
+
+            // Temporary schedule elements
+            const tempForm = document.getElementById('tempScheduleForm');
+            const tempCheckAllStaff = document.getElementById('tempCheckAllStaff');
+            const tempStaffCheckboxes = tempForm.querySelectorAll('.temp-staff-checkbox');
+            const tempScheduleOptions = document.getElementById('tempScheduleOptions');
+            const tempWorkIn = tempForm.querySelector('input[name="work_in"]');
+            const tempWorkOff = tempForm.querySelector('input[name="work_off"]');
+            const tempSubmitButton = document.getElementById('tempSubmitButton');
+            const tempDayOffOption = document.getElementById('tempDayOffOption');
+            const tempTimeInputs = document.getElementById('tempTimeInputs');
+
+            function handleTempStaffCheckboxChange() {
+                const anyStaffChecked = Array.from(tempStaffCheckboxes).some(cb => cb.checked);
+                tempScheduleOptions.style.display = anyStaffChecked ? 'block' : 'none';
+                checkTempSelections();
+            }
+
+            function checkTempSelections() {
+                const anyStaffChecked = Array.from(tempStaffCheckboxes).some(cb => cb.checked);
+                const openSchedule = tempForm.querySelector('input[name="open_schedule"]:checked').value === '1';
+                const dayOff = tempForm.querySelector('input[name="day_off"]:checked').value === '1';
+
+                if (anyStaffChecked) {
+                    tempScheduleOptions.style.display = 'block';
+
+                    if (openSchedule) {
+                        const dayOffNoOption = tempForm.querySelector('input[name="day_off"][value="0"]');
+                        const dayOffYesOption = tempForm.querySelector('input[name="day_off"][value="1"]');
+                        dayOffNoOption.checked = true;
+                        dayOffYesOption.disabled = dayOffNoOption.disabled = true;
+                        tempWorkIn.value = tempWorkOff.value = '';
+                        tempDayOffOption.style.display = tempTimeInputs.style.display = 'none';
+                        tempSubmitButton.style.display = 'block';
+                    } else {
+                        const dayOffYesOption = tempForm.querySelector('input[name="day_off"][value="1"]');
+                        const dayOffNoOption = tempForm.querySelector('input[name="day_off"][value="0"]');
+                        dayOffYesOption.disabled = dayOffNoOption.disabled = false;
+                        tempDayOffOption.style.display = 'inline-block';
+
+                        if (dayOff) {
+                            tempTimeInputs.style.display = 'none';
+                            tempSubmitButton.style.display = 'block';
+                            tempWorkIn.value = tempWorkOff.value = '';
+                        } else {
+                            tempTimeInputs.style.display = 'inline-block';
+                            validateTempTimeInputs();
+                        }
+                    }
+
+                    updateRadioStylingTemp();
+                    updateTimeInputStylingTemp();
+                } else {
+                    tempScheduleOptions.style.display = 'none';
+                }
+            }
+
+            function validateTempTimeInputs() {
+                if (tempWorkIn.value && tempWorkOff.value) {
+                    const workInTime = new Date(`1970-01-01T${tempWorkIn.value}:00`);
+                    const workOffTime = new Date(`1970-01-01T${tempWorkOff.value}:00`);
+                    
+                    if (workOffTime <= workInTime) {
+                        alert('Work OFF time must be later than Work IN time.');
+                        tempSubmitButton.style.display = 'none';
+                    } else {
+                        tempSubmitButton.style.display = 'block';
+                    }
+                } else {
+                    tempSubmitButton.style.display = 'none';
+                }
+            }
+
+            function updateRadioStylingTemp() {
+                tempForm.querySelectorAll('.custom-radio input[type="radio"]').forEach(radio => {
+                    const label = radio.nextElementSibling;
+                    if (radio.checked) {
+                        label.style.backgroundColor = 'limegreen';
+                    } else {
+                        label.style.backgroundColor = 'white';
+                    }
+                });
+            }
+
+            function updateTimeInputStylingTemp() {
+                tempForm.querySelectorAll('.custom-time input[type="time"]').forEach(input => {
+                    input.style.backgroundColor = input.value ? 'limegreen' : 'orange';
+                });
+            }
+
+            // Event listeners for temporary schedule
+            tempCheckAllStaff.addEventListener('change', function() {
+                tempStaffCheckboxes.forEach(cb => cb.checked = this.checked);
+                handleTempStaffCheckboxChange();
+            });
+
+            tempStaffCheckboxes.forEach(cb => cb.addEventListener('change', handleTempStaffCheckboxChange));
+
+            tempForm.querySelectorAll('input[name="open_schedule"]').forEach(radio => radio.addEventListener('change', checkTempSelections));
+            tempForm.querySelectorAll('input[name="day_off"]').forEach(radio => radio.addEventListener('change', checkTempSelections));
+            tempWorkIn.addEventListener('input', checkTempSelections);
+            tempWorkOff.addEventListener('input', checkTempSelections);
+
+            // Initialize temporary schedule options
+            handleTempStaffCheckboxChange();
         });
+
+
     </script>
 
 
