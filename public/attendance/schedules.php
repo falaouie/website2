@@ -65,7 +65,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Fixed Schedules - Silver System</title>
+    <title>Manage Schedules - Silver System</title>
 
     <link rel="stylesheet" href="../assets/css/styles.css">
 

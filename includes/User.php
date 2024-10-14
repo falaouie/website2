@@ -1063,11 +1063,11 @@ class User {
             $staffIds = $data['temp_staff'] ?? [];
 
             foreach ($staffIds as $staffId) {
-                $scheduledIn = $data['temp_in'][$staffId] ?? null;
-                $scheduledOut = $data['temp_out'][$staffId] ?? null;
-                $dayOff = isset($data['temp_day_off'][$staffId]) ? 1 : 0;
-                $openSchedule = isset($data['temp_open_schedule'][$staffId]) ? 1 : 0;
-                $reasonId = $data['temp_reason'][$staffId] ?? null;
+                $scheduledIn = $data['work_in'] ?? null;
+                $scheduledOut = $data['work_off'] ?? null;
+                $dayOff = isset($data['day_off']) ? 1 : 0;
+                $openSchedule = isset($data['open_schedule']) ? 1 : 0;
+                $reasonId = $data['temp_reason'] ?? null;
 
                 $stmt = $this->conn->prepare("INSERT INTO temp_schedule 
                     (staff_id, date, scheduled_in, scheduled_out, day_off, open_schedule, reason_id)
