@@ -439,8 +439,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                                         <td>
                                         <?php
                                             if (!empty($tempSchedule['scheduled_in'])) {
-                                                $scheduledIn = date('g:i A', strtotime($tempSchedule['scheduled_in']));
-                                                echo htmlspecialchars($scheduledIn);
+                                               echo htmlspecialchars(formatTime($tempSchedule['scheduled_in']));
                                             } else {
                                                 echo ''; // Leave blank if no scheduled_out
                                             }
@@ -449,8 +448,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                                         <td>
                                             <?php
                                                 if (!empty($tempSchedule['scheduled_out'])) {
-                                                    $scheduledOut = date('g:i A', strtotime($tempSchedule['scheduled_out']));
-                                                    echo htmlspecialchars($scheduledOut);
+                                                    echo htmlspecialchars(formatTime($tempSchedule['scheduled_out']));
                                                 } else {
                                                     echo ''; // Leave blank if no scheduled_out
                                                 }
