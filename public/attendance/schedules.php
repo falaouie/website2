@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 require_once '../../includes/functions.php';
@@ -9,20 +8,17 @@ require_once '../../includes/User.php';
 require_once '../../includes/auth.php';
 
 requireLogin();
-$today = date('Y-m-d');
+// $today = date('Y-m-d');
 // Check if a date has been posted or stored in the session
 if (isset($_POST['temp_date'])) {
     $selectedDate = $_POST['temp_date'];
+    // Validate the date format
+    if (!preg_match("/\d{4}-\d{2}-\d{2}/", $selectedDate)) {
+        throw new Exception("Invalid date format: $selectedDate");
+    }
     $_SESSION['selected_date'] = $selectedDate;
 } else {
-    // Fall back to session value or today if nothing is posted
     $selectedDate = $_SESSION['selected_date'] ?? date('Y-m-d');
-}
-
-function formatTime($time) {
-    if (empty($time)) return '';
-    $timestamp = strtotime($time);
-    return date('h:i A', $timestamp);
 }
 
 $user = new User(getDbConnection());
@@ -33,6 +29,15 @@ $currentSchedules = $user->getCurrentFixedSchedules();
 $fixedSchedules = $user->getFixedSchedulesForDay($selectedDate);
 $temporarySchedules = $user->getTemporarySchedules($selectedDate);
 $reasons = $user->getReasons();
+
+function formatTime($time) {
+    if (empty($time)) return '';
+    $timestamp = strtotime($time);
+    return date('h:i A', $timestamp);
+}
+
+
+
 // Handle fixed schedule form submission separately
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fixed_schedule_update'])) {
     $result = $user->updateFixedSchedule($_POST);
@@ -388,7 +393,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
         <form id="tempDateForm" action="" method="post">
             <div>
-            <input type="date" id="tempDate" name="temp_date" min="<?php echo $today; ?>" value="<?php echo htmlspecialchars($selectedDate); ?>">
+            <input type="date" id="tempDate" name="temp_date" value="<?php echo htmlspecialchars($selectedDate); ?>">
                 <button type="submit" id="tempLoadScheduleButton">Load Schedule</button>
             </div>
         </form>
