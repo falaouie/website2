@@ -98,11 +98,27 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
         #scheduleOptions input[type="time"] {
             vertical-align: middle;
         }
+        
         #submitButton {
             display: block;
             margin-top: 10px;
         }
 
+
+        #tempScheduleOptions > div {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            vertical-align: top;
+        }
+        #tempScheduleOptions label {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        #tempScheduleOptions input[type="radio"],
+        #tempScheduleOptions input[type="time"] {
+            vertical-align: middle;
+        }
         /* Style for the container to center elements */
         .center-container {
             display: flex;
@@ -562,7 +578,6 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                     </label>
                 </div>
                 <div>
-                <div>
                     <label for="temp_reason">Reason:</label>
                     <select name="temp_reason" id="temp_reason">
                         <option value="">Select Reason</option>
@@ -570,8 +585,6 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                             <option value="<?php echo $reason['id']; ?>"><?php echo htmlspecialchars($reason['text']); ?></option>
                         <?php endforeach; ?>
                     </select>
-                </div>
-
                 </div>
                 
                 <button type="submit" id="tempSubmitButton" class="btn btn-primary hidden">Update Schedules</button>
