@@ -76,14 +76,6 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
     <style>
 
-        .schedule-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-
-        .schedule-table th, .schedule-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-
-        .schedule-table th { background-color: #f2f2f2; }
-
-        .staff-name { text-align: left; }
-
         #scheduleOptions > div {
             display: inline-block;
             margin-right: 20px;
@@ -153,8 +145,6 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
             padding: 20px;
             border: 1px solid #ddd;
         }
-
-        
 
         .custom-time {
             display: inline-block;
@@ -870,7 +860,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
 
     </script>
-
+    <script src="../assets/js/app.js"></script>
 
 </body>
 

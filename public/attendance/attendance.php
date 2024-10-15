@@ -64,7 +64,7 @@ $firstName = $_SESSION['first_name'];
 
         <div class="btn-grid">
 
-            <a href="attendance.php" class="btn btn-primary">Attendance</a>
+            <a href="today_attendances.php" class="btn btn-primary">Staff Attendance</a>
 
             <a href="schedules.php" class="btn btn-primary">Schedules</a>
 

@@ -14,10 +14,6 @@ class User {
 
 
 
-    // Existing functions
-
-
-
     public function getUserByUsername($username) {
 
         $query = "SELECT u.*, s.first_name, s.last_name 
@@ -961,7 +957,6 @@ class User {
     }
 
 
-
     public function updateFixedSchedule($data) {
         $this->conn->beginTransaction();
         try {
@@ -1011,26 +1006,6 @@ class User {
         }
     }
 
-    public function getTemporarySchedules($date) {
-        $query = "SELECT ts.*, s.first_name, s.last_name, r.text as reason_text
-                  FROM temp_schedule ts
-                  JOIN staff_tbl s ON ts.staff_id = s.staff_id
-                  LEFT JOIN reason_tbl r ON ts.reason_id = r.id
-                  WHERE ts.date = :date
-                  ORDER BY s.first_name, s.last_name";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':date', $date);
-        $stmt->execute();
-        
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $schedules = [];
-        foreach ($results as $row) {
-            $schedules[$row['staff_id']] = $row;
-        }
-        return $schedules;
-    }
-
     public function getFixedSchedulesForDay($day) {
         $dayOfWeek = date('w', strtotime($day));
         // Adjust for systems where 0 is Sunday (shift index)
@@ -1046,6 +1021,26 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':day_of_week', $dayOfWeek, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $schedules = [];
+        foreach ($results as $row) {
+            $schedules[$row['staff_id']] = $row;
+        }
+        return $schedules;
+    }
+
+    public function getTemporarySchedules($date) {
+        $query = "SELECT ts.*, s.first_name, s.last_name, r.text as reason_text
+                  FROM temp_schedule ts
+                  JOIN staff_tbl s ON ts.staff_id = s.staff_id
+                  LEFT JOIN reason_tbl r ON ts.reason_id = r.id
+                  WHERE ts.date = :date
+                  ORDER BY s.first_name, s.last_name";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':date', $date);
         $stmt->execute();
         
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1112,6 +1107,54 @@ class User {
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    }
+
+    public function getScheduleForDay($date) {
+        $dayOfWeek = (date('w', strtotime($date)) + 6) % 7;
+    
+        // Get fixed schedules
+        $fixedQuery = "SELECT s.staff_id, s.first_name, s.last_name, sch.start_time, sch.end_time, sch.day_off, sch.open_schedule 
+                       FROM staff_tbl s 
+                       LEFT JOIN schedules sch ON s.staff_id = sch.staff_id 
+                       WHERE s.attendance_req = 1 AND s.status = 1 AND sch.work_day = :day_of_week 
+                       ORDER BY s.first_name, s.last_name";
+        $fixedStmt = $this->conn->prepare($fixedQuery);
+        $fixedStmt->bindParam(':day_of_week', $dayOfWeek, PDO::PARAM_INT);
+        $fixedStmt->execute();
+        $fixedResults = $fixedStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Get temporary schedules
+        $tempQuery = "SELECT ts.staff_id, s.first_name, s.last_name, ts.scheduled_in as start_time, ts.scheduled_out as end_time, 
+                             ts.day_off, ts.open_schedule, r.text as reason_text 
+                      FROM temp_schedule ts 
+                      JOIN staff_tbl s ON ts.staff_id = s.staff_id 
+                      LEFT JOIN reason_tbl r ON ts.reason_id = r.id 
+                      WHERE ts.date = :date 
+                      ORDER BY s.first_name, s.last_name";
+        $tempStmt = $this->conn->prepare($tempQuery);
+        $tempStmt->bindParam(':date', $date);
+        $tempStmt->execute();
+        $tempResults = $tempStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        $scheduleForDay = [];
+    
+        // Process fixed schedules
+        foreach ($fixedResults as $row) {
+            $scheduleForDay[$row['staff_id']] = $row;
+        }
+    
+        // Override with temporary schedules where applicable
+        foreach ($tempResults as $row) {
+            if (isset($scheduleForDay[$row['staff_id']])) {
+                // Update existing entry
+                $scheduleForDay[$row['staff_id']] = array_merge($scheduleForDay[$row['staff_id']], $row);
+            } else {
+                // Add new entry
+                $scheduleForDay[$row['staff_id']] = $row;
+            }
+        }
+    
+        return $scheduleForDay;
     }
 
 }
