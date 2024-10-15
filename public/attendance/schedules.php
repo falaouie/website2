@@ -579,7 +579,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                 </div>
                 <div>
                     <label for="temp_reason">Reason:</label>
-                    <select name="temp_reason" id="temp_reason">
+                    <select name="temp_reason" id="temp_reason" required>
                         <option value="">Select Reason</option>
                         <?php foreach ($reasons as $reason) : ?>
                             <option value="<?php echo $reason['id']; ?>"><?php echo htmlspecialchars($reason['text']); ?></option>
