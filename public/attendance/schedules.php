@@ -30,14 +30,6 @@ $fixedSchedules = $user->getFixedSchedulesForDay($selectedDate);
 $temporarySchedules = $user->getTemporarySchedules($selectedDate);
 $reasons = $user->getReasons();
 
-function formatTime($time) {
-    if (empty($time)) return '';
-    $timestamp = strtotime($time);
-    return date('h:i A', $timestamp);
-}
-
-
-
 // Handle fixed schedule form submission separately
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fixed_schedule_update'])) {
     $result = $user->updateFixedSchedule($_POST);

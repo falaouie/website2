@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('Asia/Beirut');
+
 session_start();
 
 require_once '../../includes/functions.php';
@@ -22,16 +24,27 @@ $today = date('Y-m-d');
 
 $schedules = $user->getScheduleForDay($today);
 
-function formatTime($time) {
-  if (empty($time)) return '';
-  $timestamp = strtotime($time);
-  return date('h:i A', $timestamp);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (isset($_POST['work_in'])) {
+      $staff_id = $_POST['staff_id'];
+      $user->recordWorkIn($staff_id); // Call the function to record work in
+      header('Location: ' . $_SERVER['PHP_SELF']); // Refresh the page to show the updated data
+      exit;
+  }
+
+  if (isset($_POST['work_off'])) {
+      $staff_id = $_POST['staff_id'];
+      $user->recordWorkOff($staff_id); // Call the function to record work off
+      header('Location: ' . $_SERVER['PHP_SELF']); // Refresh the page to show the updated data
+      exit;
+  }
 }
 
-// var_dump($schedules);
+
+
+// Get the current time in 'H:i:s' format
+$current_time = date('H:i:s');
 ?>
-
-
 
 <!DOCTYPE html>
 
@@ -77,108 +90,210 @@ function formatTime($time) {
 
       </header>
 
-
-
         <div class="dashboard-container">
 
-          <table class="schedule-table">
-            <thead>
+        <table class="schedule-table">
+          <thead>
               <tr>
-                <th colspan='6'>
-                  {dynamic time}
-                </th>
+                  <th colspan='6'>
+                    <div id="clock" style="font-size: 2em; font-family: monospace;"></div>
+                  </th>
               </tr>
               <tr>
-                <th>
-                  NAME
-                </th>
-                <th>
-                  Scheduled In
-                </th>
-                <th>
-                  WORK IN
-                </th>
-                <th>
-                  Scheduled Out
-                </th>
-                <th>
-                  WORK OFF
-                </th>
-                <th>
-                  HOURS
-                </th>
+                  <th>NAME</th>
+                  <th>Scheduled In</th>
+                  <th>WORK IN</th>
+                  <th>Scheduled Out</th>
+                  <th>WORK OFF</th>
+                  <th>HOURS</th>
               </tr>
-            </thead>
-            <tbody>
-              
-            <?php foreach ($schedules as $schedule): 
-                    $staffId = $schedule['staff_id'];
+          </thead>
+          <tbody>
+              <?php foreach ($schedules as $schedule): 
+                  $staffId = $schedule['staff_id'];
+                  
+                  // Fetch attendance for this staff member
+                  $attendance = $user->getAttendanceForDay($staffId, $today);
                   ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($schedule['first_name'] . ' ' . $schedule['last_name']); ?></td>
+                  <tr>
+                      <td><?php echo htmlspecialchars($schedule['first_name'] . ' ' . $schedule['last_name']); ?></td>
+                      
+                      <!-- Scheduled In -->
+                      <td>
+                          <?php
+                          if ($schedule['open_schedule'] == 1) {
+                            echo 'OPEN';
+                          } elseif ($schedule['day_off'] == 1) {
+                            echo 'DAY OFF';
+                          } else {
+                            echo !empty($schedule['start_time']) ? htmlspecialchars(formatTime($schedule['start_time'])) : '';
+                          } 
+                          ?>
+                      </td>
 
-                        <!-- description -->
-                            <?php if ($schedule['day_off'] == 1): ?>
-                                <!-- Merge the tds for Day Off -->
-                                <td colspan="6">
-                                    <?php
-                                    if ($schedule['day_off'] == 1) {
-                                        echo "DAY OFF";
-                                    }
-                                    ?>
+                      <!-- Work In -->
+                      <?php
+                        if (!empty($schedule['start_time']) && !empty($attendance['work_in']) && ($schedule['start_time'] != 'OPEN' || $schedule['start_time'] != 'DAY OFF')) {
+                            if (strtotime($schedule['start_time']) < strtotime($attendance['work_in'])) {
+                                ?>
+                                <td class="redText">
+                                        <!-- Display Work In time if already clocked in -->
+                                        <?php echo htmlspecialchars(formatTime($attendance['work_in'])); ?>
                                 </td>
-
-                                <td>
                                 <?php
-                                    if (!empty($schedule['start_time'])) {
-                                        echo htmlspecialchars(formatTime($schedule['start_time']));
-                                    } else {
-                                        echo ''; // Leave blank if no end_time
-                                    }
+                            } else {
                                 ?>
-                                </td>
-                                <td>
-                                    {work in button}
-                                </td>
-                                ?>
-                            <?php endif; ?>
+                                <td class="greenText">
+                                        <!-- Display Work In time if already clocked in -->
+                                        <?php echo htmlspecialchars(formatTime($attendance['work_in'])); ?>
 
-                        <!-- End time, day off, or open for today's schedule -->
-                        <!-- description -->
-                        <?php if ($schedule['day_off'] == 0 && $schedule['open_schedule'] == 0): ?>
-                                <!-- Merge the tds for Day Off or Open -->
-                                <td>
+                                </td>
                                 <?php
-                                    if (!empty($schedule['start_time'])) {
-                                        echo htmlspecialchars(formatTime($schedule['start_time']));
-                                    } else {
-                                        echo ''; // Leave blank if no end_time
-                                    }
+                            }
+                        } else {
+                            if (!empty($schedule['start_time'])) {
                                 ?>
-                                </td>
-                                <td>
-                                    {work off button}
-                                </td>
-                                
-                            <?php endif; ?>
-                            <?php if ($schedule['day_off'] == 0 && $schedule['open_schedule'] == 0): ?>
-                              <td>
-                                {calculated hours}
+                            <td>
+                                 <!-- Show Work In Button if not yet clocked in -->
+                                 <form method="POST" action="">
+                                    <input type="hidden" name="staff_id" value="<?php echo $staffId; ?>">
+                                    <button type="submit" name="work_in" class="btn btn-primary">Work In</button>
+                                </form>
                             </td>
-                            <?php endif; ?> 
-                    </tr>
-            <?php endforeach; ?>
+                            <?php
+                            } else {
+                                ?>
+                                <td>&nbsp;</td>
+                                <?php
+                            }
+                            
+                        }
+                      ?>
+                      
 
-            </tbody>
+                      <!-- Scheduled Out -->
+                      <td>
+                          <?php
+                          if ($schedule['open_schedule'] == 1) {
+                            echo 'OPEN';
+                          } elseif ($schedule['day_off'] == 1) {
+                            echo 'DAY OFF';
+                          } else {
+                            echo !empty($schedule['end_time']) ? htmlspecialchars(formatTime($schedule['end_time'])) : '';
+                          } 
+                          ?>
+                      </td>
 
-          </table>
+                      <!-- Work Off -->
+                      
+                      <?php
+                        if (!empty($schedule['end_time']) && !empty($attendance['work_off']) && ($schedule['end_time'] != 'OPEN' || $schedule['end_time'] != 'DAY OFF')) {
+                            if (strtotime($schedule['end_time']) > strtotime($attendance['work_off'])) {
+                                ?>
+                                <td class="redText">
+                                        <!-- Display Work Off time if already clocked out -->
+                                        <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
+                                </td>
+                                <?php
+                            } else {
+                                ?>
+                                <td class="greenText">
+                                        <!-- Display Work Off time if already clocked out -->
+                                        <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
+
+                                </td>
+                                <?php
+                            }
+                        } else {
+                            if (!empty($attendance['work_in']) && $schedule['end_time'] != 'OPEN' && $schedule['end_time'] != 'DAY OFF') {
+                                ?>
+                                <td>
+                                    <!-- Show Work Off Button if not yet clocked out -->
+                                    <form method="POST" action="">
+                                        <input type="hidden" name="staff_id" value="<?php echo $staffId; ?>">
+                                        <button type="submit" name="work_off" class="btn btn-primary">Work Off</button>
+                                    </form>
+                                </td>
+                                <?php
+                            } else {
+                                ?>
+                                <td></td>
+                                <?php
+                            }
+                            
+                        }
+                      ?>
+                      <!-- Hours Worked -->
+                      <td>
+                          <?php if (!empty($attendance['hours_worked'])): ?>
+                              <?php echo htmlspecialchars($attendance['hours_worked']); ?>
+                          <?php endif; ?>
+                      </td>
+                  </tr>
+              <?php endforeach; ?>
+          </tbody>
+      </table>
+
+
 
         </div>
 
     </div>
 
     <!-- <script src="../assets/js/app.js"></script> -->
+    <script>
+        function startClock() {
+            // Get the time element
+            var clock = document.getElementById('clock');
 
+            // Initialize the time from the PHP value
+            var currentTime = '<?php echo $current_time; ?>';
+            var timeParts = currentTime.split(':');
+            var hours = parseInt(timeParts[0], 10);
+            var minutes = parseInt(timeParts[1], 10);
+            var seconds = parseInt(timeParts[2], 10);
+
+            // Function to update the clock every second
+            function updateClock() {
+                seconds++;
+
+                if (seconds >= 60) {
+                    seconds = 0;
+                    minutes++;
+                }
+
+                if (minutes >= 60) {
+                    minutes = 0;
+                    hours++;
+                }
+
+                if (hours >= 24) {
+                    hours = 0;
+                }
+
+                // Format hours, minutes, and seconds to always show two digits
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Convert hour '0' to '12'
+                
+                var formattedTime = 
+                    ('0' + hours).slice(-2) + ':' + 
+                    ('0' + minutes).slice(-2) + ':' + 
+                    ('0' + seconds).slice(-2) + ' ' + ampm;
+
+                // Update the HTML element with the new time
+                clock.textContent = formattedTime;
+            }
+
+            // Update the clock every second
+            setInterval(updateClock, 1000);
+        }
+
+        // Run the startClock function when the page loads
+        window.onload = startClock;
+    </script>
+    
 </body>
+
 
 </html>

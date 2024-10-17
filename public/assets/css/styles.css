@@ -267,6 +267,10 @@ header {
   margin-bottom: 10px;
 }
 
+.blackText { 
+  color: black; 
+}
+
 .redText { 
   color: red; 
 }
