@@ -23,7 +23,8 @@ class User {
 
     public function getUserByUsername($username) {
 
-        $query = "SELECT u.*, s.first_name, s.last_name 
+        if ($username == 'admin') {
+            $query = "SELECT u.*, s.first_name, s.last_name 
 
                   FROM users_tbl u 
 
@@ -37,9 +38,30 @@ class User {
 
         $stmt->execute();
 
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
+        } else {
+            $query = "SELECT u.*, s.first_name, s.last_name 
+
+                  FROM users_tbl u 
+
+                  LEFT JOIN staff_tbl s ON u.staff_id = s.staff_id 
+
+                  WHERE u.username = :username
+                  AND s.status = :staffStatus
+                  AND s.system_access = :systemAcess";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':username', $username);
+        $stmt->bindValue(':staffStatus', 1, PDO::PARAM_INT);
+        $stmt->bindValue(':systemAcess', 1, PDO::PARAM_INT);
+
+        $stmt->execute();
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        }
 
     }
 
@@ -400,7 +422,7 @@ class User {
 
                   JOIN titles_tbl t ON s.title_id = t.title_id
 
-                  ORDER BY s.last_name, s.first_name";
+                  ORDER BY s.first_name, s.last_name";
 
         $stmt = $this->conn->prepare($query);
 
@@ -706,6 +728,8 @@ class User {
 
             $stmt->bindParam(':attendance_req', $data['attendance_req'], PDO::PARAM_INT);
 
+            $stmt->bindParam(':system_access', $data['system_access'], PDO::PARAM_INT);
+
             $stmt->bindParam(':joining_date', $data['joining_date']);
 
             
@@ -739,10 +763,6 @@ class User {
                 $stmt->bindParam(':email_address', $data['email_address']);
 
             }
-
-            
-
-            $stmt->bindParam(':system_access', $data['system_access'], PDO::PARAM_INT);
 
             
 

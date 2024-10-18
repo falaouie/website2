@@ -76,11 +76,7 @@ $current_time = date('H:i:s');
 
         </div>
 
-        <div>
-
-            <h1 class="dashboard-title">Attendance History</h1>
-
-        </div>
+        
 
         <div>
 
@@ -91,8 +87,12 @@ $current_time = date('H:i:s');
       </header>
 
         <div class="dashboard-container">
-    history table
+        
+            <div>
 
+                <h1 class="dashboard-title">Attendance History</h1>
+
+            </div>
 
 
         </div>

@@ -207,11 +207,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
             </div>
 
-            <div>
-
-                <h1 class="dashboard-title">Staff Schedule</h1>
-
-            </div>
+            
 
             <div>
 
@@ -232,6 +228,12 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
             </div>
 
         <?php endif; ?>
+
+        <div>
+
+            <h1 class="dashboard-title">Staff Schedule</h1>
+
+        </div>
 
         <div class="center-container">
             <!-- Custom radio buttons for schedule options -->
