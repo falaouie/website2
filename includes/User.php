@@ -376,7 +376,9 @@ class User {
 
                   FROM users_tbl u 
 
-                  LEFT JOIN staff_tbl s ON u.staff_id = s.staff_id 
+                  LEFT JOIN staff_tbl s ON u.staff_id = s.staff_id
+
+                  WHERE s.status = 1 AND s.system_access = 1
 
                   ORDER BY u.username";
 
