@@ -1,16 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const dateDisplay = document.querySelector('.login-date-display');
-  if (dateDisplay) {
-    const now = new Date();
-    const options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-    dateDisplay.textContent = now.toLocaleDateString('en-US', options);
-  }
-
   // Inactivity Timer
   let inactivityTimer;
   const inactivityTime = 5 * 60 * 1000; // 5 minutes in milliseconds

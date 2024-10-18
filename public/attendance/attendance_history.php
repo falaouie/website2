@@ -94,7 +94,21 @@ $current_time = date('H:i:s');
 
             </div>
 
-
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Work In
+                        </th>
+                        <th>
+                            Work Off
+                        </th>
+                    </tr>
+                </thead>
+            </table>
         </div>
 
     </div>
