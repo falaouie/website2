@@ -482,7 +482,7 @@ class User {
 
                   LEFT JOIN users_tbl u ON s.staff_id = u.staff_id
 
-                  WHERE u.id IS NULL AND s.system_access = 1
+                  WHERE u.id IS NULL AND s.system_access = 1 AND s.status = 1
 
                   ORDER BY s.last_name, s.first_name";
 
