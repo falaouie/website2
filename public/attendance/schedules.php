@@ -8,7 +8,7 @@ require_once '../../includes/User.php';
 require_once '../../includes/auth.php';
 
 requireLogin();
-// $today = date('Y-m-d');
+$today = date('Y-m-d');
 // Check if a date has been posted or stored in the session
 if (isset($_POST['temp_date'])) {
     $selectedDate = $_POST['temp_date'];
@@ -391,8 +391,8 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
         <form id="tempDateForm" action="" method="post">
             <div>
-            <input type="date" id="tempDate" name="temp_date" value="<?php echo htmlspecialchars($selectedDate); ?>">
-                <button type="submit" id="tempLoadScheduleButton">Load Schedule</button>
+            <input type="date" id="tempDate" name="temp_date" min="<?php echo $today; ?>" value="<?php echo htmlspecialchars($selectedDate); ?>">
+                <button type="submit" id="tempLoadScheduleButton" class="btn btn-primary">Load Schedule</button>
             </div>
         </form>
         

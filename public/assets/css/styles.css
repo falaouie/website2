@@ -38,6 +38,16 @@ table th {
   font-weight: bold;
 }
 
+/* Style for even rows */
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light grey background for even rows */
+}
+
+/* Style for odd rows */
+tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* White background for odd rows */
+}
+
 /* .wide-input {
   width: 100%;
 } */

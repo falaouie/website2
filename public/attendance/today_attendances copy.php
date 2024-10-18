@@ -133,7 +133,7 @@ $current_time = date('H:i:s');
 
                       <!-- Work In -->
                       <?php
-                        if (!empty($schedule['start_time']) && !empty($attendance['work_in']) && ($schedule['start_time'] != 'OPEN' || $schedule['start_time'] != 'DAY OFF')) {
+                        if (!empty($schedule['start_time']) && !empty($attendance['work_in']) && ($schedule['open_schedule'] != 1 || $schedule['day_off'] != 1)) {
                             if (strtotime($schedule['start_time']) < strtotime($attendance['work_in'])) {
                                 ?>
                                 <td class="redText">
@@ -151,7 +151,7 @@ $current_time = date('H:i:s');
                                 <?php
                             }
                         } else {
-                            if (!empty($schedule['start_time'])) {
+                            if ((!empty($schedule['start_time']) || $schedule['open_schedule'] == 1) && empty($attendance['work_in'])) {
                                 ?>
                             <td>
                                  <!-- Show Work In Button if not yet clocked in -->
@@ -161,9 +161,19 @@ $current_time = date('H:i:s');
                                 </form>
                             </td>
                             <?php
+                            } elseif (!empty($attendance['work_in'])) {
+                                ?>
+                                <td>
+                                    <?php
+                                      echo htmlspecialchars(formatTime($attendance['work_in']));  
+                                    ?>
+                                </td>
+                                <?php
                             } else {
                                 ?>
-                                <td>&nbsp;</td>
+                                <td>
+                                   &nbsp;
+                                </td>
                                 <?php
                             }
                             
@@ -187,20 +197,29 @@ $current_time = date('H:i:s');
                       <!-- Work Off -->
                       
                       <?php
-                        if (!empty($schedule['end_time']) && !empty($attendance['work_off']) && ($schedule['end_time'] != 'OPEN' || $schedule['end_time'] != 'DAY OFF')) {
-                            if (strtotime($schedule['end_time']) > strtotime($attendance['work_off'])) {
-                                ?>
-                                <td class="redText">
-                                        <!-- Display Work Off time if already clocked out -->
-                                        <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
-                                </td>
-                                <?php
+                        if (!empty($attendance['work_off']) && ($schedule['end_time'] != 'OPEN' || $schedule['end_time'] != 'DAY OFF')) {
+                            if ($schedule['open_schedule'] != 1) {
+                                if ((strtotime($schedule['end_time']) > strtotime($attendance['work_off'])) && $schedule['open_schedule'] != 1) {
+                                    ?>
+                                    <td class="redText">
+                                            <!-- Display Work Off time if already clocked out -->
+                                            <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
+                                    </td>
+                                    <?php
+                                } else {
+                                    ?>
+                                    <td class="greenText">
+                                            <!-- Display Work Off time if already clocked out -->
+                                            <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
+    
+                                    </td>
+                                    <?php
+                                } 
                             } else {
                                 ?>
-                                <td class="greenText">
-                                        <!-- Display Work Off time if already clocked out -->
-                                        <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
-
+                                <td>
+                                    <!-- Display Work Off time if already clocked out -->
+                                    <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
                                 </td>
                                 <?php
                             }

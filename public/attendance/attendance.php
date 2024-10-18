@@ -50,7 +50,7 @@ $firstName = $_SESSION['first_name'];
 
             </div>
 
-            <div><h1 class="dashboard-title">ATTENDANCE MANAGEMENT</h1></div>
+            <div><h1 class="dashboard-title">Staff Attendance Management</h1></div>
 
             <div>
 
@@ -68,7 +68,7 @@ $firstName = $_SESSION['first_name'];
 
             <a href="schedules.php" class="btn btn-primary">Schedules</a>
 
-            <a href="attendance_report.php" class="btn btn-primary">Attendance History</a>
+            <a href="attendance_history.php" class="btn btn-primary">Attendance History</a>
 
         </div>
 
