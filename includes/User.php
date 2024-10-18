@@ -422,7 +422,7 @@ class User {
 
                   JOIN titles_tbl t ON s.title_id = t.title_id
 
-                  ORDER BY s.first_name, s.last_name";
+                  ORDER BY s.status DESC, s.first_name, s.last_name";
 
         $stmt = $this->conn->prepare($query);
 
