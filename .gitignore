@@ -2,4 +2,6 @@ config/database.local.php
 config/database.staging.php
 config/database.production.php
 config/database.php
+/.DS_Store
+*/.DS_Store
 **/.DS_Store

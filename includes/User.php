@@ -433,6 +433,44 @@ class User {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
+    
+    public function getActiveStaff() {
+
+        $query = "SELECT s.*, t.title_name FROM staff_tbl s
+
+                  JOIN titles_tbl t ON s.title_id = t.title_id
+
+                  WHERE s.status = 1
+
+                  ORDER BY s.status DESC, s.first_name, s.last_name";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+    
+    public function getInactiveStaff() {
+
+        $query = "SELECT s.*, t.title_name FROM staff_tbl s
+
+                  JOIN titles_tbl t ON s.title_id = t.title_id
+
+                  WHERE s.status = 0
+
+                  ORDER BY s.status DESC, s.first_name, s.last_name";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
+    
 
 
 
@@ -1228,6 +1266,36 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
+    public function getAttendanceList($staffID, $fromDate, $toDate) {
+        // Fetch staff attendance from staff_attendance
+        if ($staffID == 'allStaff') {
+            $query = "SELECT *
+            FROM staff_attendance sa
+            LEFT JOIN staff_tbl s ON sa.staff_id = s.staff_id 
+            WHERE sa.work_date >= :fromDate
+            AND sa.work_date <= :toDate";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':fromDate', $fromDate);
+            $stmt->bindParam(':toDate', $toDate);
+
+        } else {
+            $query = "SELECT *
+            FROM staff_attendance sa
+            LEFT JOIN staff_tbl s ON sa.staff_id = s.staff_id 
+            WHERE sa.staff_id = :staffID
+            AND sa.work_date >= :fromDate
+            AND sa.work_date <= :toDate";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':staffID', $staffID, PDO::PARAM_INT);
+            $stmt->bindParam(':fromDate', $fromDate);
+            $stmt->bindParam(':toDate', $toDate);
+        }
+        
+        $stmt->execute();
+        // Fetch all records
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    }
 
 
 }

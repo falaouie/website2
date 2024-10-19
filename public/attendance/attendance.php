@@ -14,6 +14,11 @@ if (isset($_SESSION['selected_date'])) {
     unset($_SESSION['selected_date']); // used for temporary schedule in schedules.php
 }
 
+if (isset($_SESSION['fromDate']) || isset($_SESSION['toDate'])) {
+    unset($_SESSION['fromDate']); // used for dates in attendance_history.php
+    unset($_SESSION['toDate']);
+}
+
 $user = new User(getDbConnection());
 
 $firstName = $_SESSION['first_name'];
