@@ -89,10 +89,9 @@ if (isset($_POST['staffStatus'])) {
 $fromDateFormatted = date('d/m/Y', strtotime($fromDate));
 $toDateFormatted = date('d/m/Y', strtotime($toDate));
 
-echo 'staff id '.$staffID.'<br>';
 
 $attendanceList = $user->getAttendanceList($staffID, $fromDate, $toDate);
-var_dump($attendanceList);
+// var_dump($attendanceList);
 // exit;
 ?>
 
@@ -114,7 +113,7 @@ var_dump($attendanceList);
             display: flex;
             align-items: center; /* Vertically centers the content */
             justify-content: center; /* Horizontally centers the content */
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             width: 100%; /* Ensure the container takes up full width (if needed) */
         }
 
@@ -266,32 +265,7 @@ var_dump($attendanceList);
             </form>
 
         </div>
-        <div class="div-group">
-            <div class="div-item">
-                From
-            </div>
-            <div class="div-item greenText">
-                    <?php
-                    if (isset($_SESSION['fromDate'])) {
-                        echo $fromDateFormatted;
-                    } else {
-                        echo $todayFormatted;
-                    }
-                    ?>
-            </div>
-            <div class="div-item">
-                To
-            </div>
-            <div class="div-item greenText">
-                <?php
-                    if (isset($_SESSION['toDate'])) {
-                        echo $toDateFormatted;
-                    } else {
-                        echo $todayFormatted;
-                    }
-                    ?>
-            </div>
-        </div>
+        
 
         <div class="dashboard-container">
             <table>
@@ -300,7 +274,33 @@ var_dump($attendanceList);
                         <th colspan="5">
                            <div class="div-group">
                                 <div class="div-item">
-                                    <?php echo $staffID; ?>
+                                    <?php if (!empty($attendanceList)) : ?>
+                                        <?php echo htmlspecialchars($attendanceList[0]['first_name'] . ' ' . $attendanceList[0]['last_name']); ?>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="div-item">
+                                    &nbsp;
+                                </div>
+                                <div class="div-item greenText">
+                                        <?php
+                                        if (isset($_SESSION['fromDate'])) {
+                                            echo $fromDateFormatted;
+                                        } else {
+                                            echo $todayFormatted;
+                                        }
+                                        ?>
+                                </div>
+                                <div class="div-item">
+                                    To
+                                </div>
+                                <div class="div-item greenText">
+                                    <?php
+                                        if (isset($_SESSION['toDate'])) {
+                                            echo $toDateFormatted;
+                                        } else {
+                                            echo $todayFormatted;
+                                        }
+                                        ?>
                                 </div>
                            </div> 
                         </th>
@@ -323,6 +323,29 @@ var_dump($attendanceList);
                         </th>
                     </tr>
                 </thead>
+                <tbody>
+                    <?php foreach ($attendanceList as $row) {
+                        ?>
+                            <tr>
+                                <td>
+                                    <?php echo date('d/m/Y', strtotime($row['work_date'])); ?>
+                                </td>
+                                <td>
+                                <?php echo date('l', strtotime($row['work_date'])); ?>
+                                </td>
+                                <td>
+                                    <?php echo $row['work_in']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $row['work_off']; ?>
+                                </td>
+                                <td>
+                                    <?php echo $row['hours_worked']; ?>
+                                </td>
+                            </tr>
+                        <?php
+                    } ?>
+                </tbody>
             </table>
         </div>
 

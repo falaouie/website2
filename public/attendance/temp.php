@@ -40,3 +40,5 @@
         onchange="this.form.submit();">
     </div>
 </div>
+
+<?php

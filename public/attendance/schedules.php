@@ -426,9 +426,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                        
-                        foreach ($fixedSchedules as $schedule): 
+                    <?php foreach ($fixedSchedules as $schedule): 
                             $staffId = $schedule['staff_id'];
                             $tempSchedule = $temporarySchedules[$staffId] ?? null; // Get temp schedule for this staff ID, if available
                         ?>
