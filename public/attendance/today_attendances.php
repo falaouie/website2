@@ -158,7 +158,7 @@ $current_time = date('H:i:s');
 
                       <!-- Work In -->
                       <?php
-                        if ((!empty($schedule['start_time']) && !empty($attendance['work_in']) && ($schedule['open_schedule'] != 1)|| $schedule['day_off'] != 1)) {
+                        if (!empty($schedule['start_time']) && !empty($attendance['work_in']) && ($schedule['open_schedule'] != 1 || $schedule['day_off'] != 1)) {
                             if (strtotime('+1 minute', strtotime($schedule['start_time'])) > strtotime($attendance['work_in'])) {
                                 ?>
                                 <td class="greenText">
@@ -176,7 +176,7 @@ $current_time = date('H:i:s');
                                 <?php
                             }
                         } else {
-                            if ((!empty($schedule['start_time']) || $schedule['open_schedule'] == 1) && empty($attendance['work_in']) && $schedule['day_off'] != 1) {
+                            if ((!empty($schedule['start_time']) || $schedule['open_schedule'] == 1) && empty($attendance['work_in'])) {
                                 ?>
                             <td>
                                  <!-- Show Work In Button if not yet clocked in -->
@@ -242,9 +242,8 @@ $current_time = date('H:i:s');
                                 } else {
                                     ?>
                                     <td class="greenText">
-                                            <!-- Display Work Off time if already clocked out -->
-                                            <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
-    
+                                        <!-- Display Work Off time if already clocked out -->
+                                        <?php echo htmlspecialchars(formatTime($attendance['work_off'])); ?>
                                     </td>
                                     <?php
                                 } 
@@ -300,7 +299,7 @@ $current_time = date('H:i:s');
 
     </div>
 
-    <!-- <script src="../assets/js/app.js"></script> -->
+    <script src="../assets/js/app.js"></script>
     <script>
         
         function startClock() {

@@ -187,6 +187,12 @@ select {
   min-width: 150px;
 }
 
+.btn-print {
+  color: #000 !important;
+  background-color: rgb(255, 255, 0);
+  outline: 0.05px solid black;
+}
+
 /* Dashboard and Admin Styles */
 .dashboard-container {
   max-width: 1200px;
@@ -282,11 +288,13 @@ header {
 }
 
 .redText { 
-  color: red; 
+  color: red;
+  font-weight: bold;
 }
 
 .greenText{ 
-  color: green; 
+  color: green;
+  font-weight: bold; 
 }
 
 .hidden { 
@@ -301,7 +309,7 @@ footer {
   margin-top: 20px;
 }
 
-/* Attendance rekated CSS    */
+/* Attendance related CSS    */
 
 .schedule-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
 
@@ -311,3 +319,15 @@ footer {
 
 .staff-name { text-align: left; }
 
+/* General CSS rules */
+@media screen {
+  .print-only {
+    display: none;
+  }
+}
+
+@media print {
+  .screen-only {
+    display: none;
+  }
+}
