@@ -41,13 +41,6 @@ if (!isset($_SESSION['toDate'])) {
 }
 
 
-
-if (!isset($_SESSION['staffStatus'])) {
-    $_SESSION['staffStatus'] = 1;
-    // Default to Active Staff if no status is selected
-    $staffList = $user->getActiveStaff();
-}
-
 if (isset($_SESSION['staffID'])) {
     $staffID = $_SESSION['staffID'];
 }
@@ -58,6 +51,7 @@ if (!isset($_SESSION['staffID'])) {
 
 // Check if the date form was submitted and store the values in sessions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
     if (isset($_POST['fromDate'])) {
         $_SESSION['fromDate'] = $_POST['fromDate'];
         $fromDate = $_SESSION['fromDate'];
@@ -71,32 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $staffID = $_SESSION['staffID'];
     }
 
-
-    // echo 'staff id '.$staffID.'<br>';
-    // echo 'from date '.$fromDate.'<br>';
-    // echo 'to date '.$toDate.'<br>';
 }
 
-
-// Check if a staff status has been selected
-if (isset($_POST['staffStatus'])) {
-    $staffStatus = $_POST['staffStatus'];
-    $_SESSION['staffStatus'] = $_POST['staffStatus'];
-    unset($_SESSION['staffID']);
-}
-$staffStatus = $_SESSION['staffStatus'];
-// Get the staff list based on the selected status
-if ($staffStatus === '1') {
-    // Active Staff
-    $staffList = $user->getActiveStaff();
-} elseif ($staffStatus === '0') {
-    // Inactive Staff
-    $staffList = $user->getInactiveStaff();
-} elseif ($staffStatus === 'allStaff') {
-    // All Staff
-    $staffList = $user->getAllStaff();
-}
-
+$staffList = $user->getAllStaff();
 $fromDateFormatted = date('d/m/Y', strtotime($fromDate));
 $toDateFormatted = date('d/m/Y', strtotime($toDate));
 
@@ -206,52 +177,10 @@ if ($staffID && $fromDate && $toDate) {
         </div>
 
         <div class="dashboard-container screen-only">
-        
-            
-
-
-            <form id="staffStatusSelection" action="" method="post">
-                <div class="div-group">
-                    <div class="div-item">
-                        Staff Status
-                    </div>
-                    <div id="activeStatusDiv" class="schedule-option" style="background-color: <?php echo (isset($_SESSION['staffStatus']) && $_SESSION['staffStatus'] == '1') ? 'limegreen' : 'white'; ?>">
-                        <strong><label for="activeStatus">Active</label></strong>
-                        <input class="screen-only" id="activeStatus" type="radio" name="staffStatus" value="1" 
-                        <?php echo (isset($_SESSION['staffStatus']) && $_SESSION['staffStatus'] == '1') ? 'checked' : ''; ?>
-                        onchange="this.form.submit();">
-                    </div>
-                    <div id="inactiveStatusDiv" class="schedule-option" style="background-color: <?php echo isset($_SESSION['staffStatus']) && $_SESSION['staffStatus'] == '0' ? 'limegreen' : 'white'; ?>">
-                        <strong><label for="inactiveStatus">In-Active</label></strong>
-                        <input class="screen-only" id="inactiveStatus" type="radio" name="staffStatus" value="0" 
-                        <?php echo isset($_SESSION['staffStatus']) && $_SESSION['staffStatus'] == '0' ? 'checked' : ''; ?>
-                        onchange="this.form.submit();">
-                    </div>
-                    <div id="allStatusDiv" class="schedule-option" style="background-color: <?php echo isset($_SESSION['staffStatus']) && $_SESSION['staffStatus'] == 'allStaff' ? 'limegreen' : 'white'; ?>">
-                        <strong><label for="allStatus">All</label></strong>
-                        <input class="screen-only" id="allStatus" type="radio" name="staffStatus" value="allStaff" 
-                        <?php echo isset($_SESSION['staffStatus']) && $_SESSION['staffStatus'] == 'allStaff' ? 'checked' : ''; ?>
-                        onchange="this.form.submit();">
-                    </div>
-                </div>
-            </form>
-
 
             <!-- Attendance History Form -->
             <form id="attendanceHistForm" method="post" action="">
                 <div class="div-group">
-                    <div class="div-item">
-                        <label for="fromDate">From</label>
-                        <input type="date" name="fromDate" id="fromDate" value="<?php echo isset($_SESSION['fromDate']) ? $fromDate : $today; ?>" required>
-                    </div>
-                    <div class="div-item">
-                        <label for="toDate">To</label>
-                        <input type="date" name="toDate" id="toDate" value="<?php echo isset($_SESSION['toDate']) ? $toDate : $today; ?>" required>
-                    </div>
-                </div>
-
-                <div class="div-group">
-                    
                     <div class="div-item">
                         <!-- Visible input field with staff names -->
                         <input id="select_staff" list="selectStaff" placeholder="Select Staff Name" autocomplete="off" autofocus="true" required>
@@ -269,15 +198,74 @@ if ($staffID && $fromDate && $toDate) {
                             <?php endforeach; ?>
                         </datalist>
                     </div>
+                </div>
+
+                <div class="div-group">
+                    
+                    <div class="div-item">
+                        <label for="fromDate">From</label>
+                        <input type="date" name="fromDate" id="fromDate" value="<?php echo isset($_SESSION['fromDate']) ? $fromDate : $today; ?>" required>
+                    </div>
+                    <div class="div-item">
+                        <label for="toDate">To</label>
+                        <input type="date" name="toDate" id="toDate" value="<?php echo isset($_SESSION['toDate']) ? $toDate : $today; ?>" required>
+                    </div>
+
                     <div class="div-item">
                         <button type="submit" id="submitAttendHistForm" name="submitAttendHistForm" class="btn btn-primary">Submit</button>
                     </div>
+
                 </div>
             </form>
 
         </div>
         
-
+        <div class="div-group">
+            <div class="div-item">
+                All Staff
+            </div>
+            <div class="div-item">
+                &nbsp;
+            </div>
+            <div class="div-item greenText">
+                <?php
+                if ($fromDate == $toDate) {
+                    echo date('l', strtotime($fromDate));
+                }
+                ?>
+            </div>
+            <div class="div-item">
+                &nbsp;
+            </div>
+            <div class="div-item greenText">
+                    <?php
+                    if (isset($_SESSION['fromDate'])) {
+                        echo $fromDateFormatted;
+                    } else {
+                        echo $todayFormatted;
+                    }
+                    ?>
+            </div>
+            <div class="div-item">
+                To
+            </div>
+            <div class="div-item greenText">
+                <?php
+                    if (isset($_SESSION['toDate'])) {
+                        echo $toDateFormatted;
+                    } else {
+                        echo $todayFormatted;
+                    }
+                    ?>
+            </div>
+            <div class="div-item">
+                &nbsp;
+            </div>
+            <div class="div-item">
+                <button class="btn btn-print screen-only" onclick="window.print()">Print</button>
+            </div> 
+        </div>
+        
         <div class="dashboard-container">
             <?php
                 if ($staffID == 'allStaff' && $attendanceList) {
@@ -286,59 +274,8 @@ if ($staffID && $fromDate && $toDate) {
                         <table>
                             <thead>
                                 <tr>
-                                    <th colspan="4">
-                                        <div class="div-group">
-                                            <div class="div-item">
-                                                All Staff
-                                            </div>
-                                            <div class="div-item">
-                                                &nbsp;
-                                            </div>
-                                            <div class="div-item greenText">
-                                                <?php
-                                                if ($fromDate == $toDate) {
-                                                    echo date('l', strtotime($fromDate));
-                                                }
-                                                ?>
-                                            </div>
-                                            <div class="div-item">
-                                                &nbsp;
-                                            </div>
-                                            <div class="div-item greenText">
-                                                    <?php
-                                                    if (isset($_SESSION['fromDate'])) {
-                                                        echo $fromDateFormatted;
-                                                    } else {
-                                                        echo $todayFormatted;
-                                                    }
-                                                    ?>
-                                            </div>
-                                            <div class="div-item">
-                                                To
-                                            </div>
-                                            <div class="div-item greenText">
-                                                <?php
-                                                    if (isset($_SESSION['toDate'])) {
-                                                        echo $toDateFormatted;
-                                                    } else {
-                                                        echo $todayFormatted;
-                                                    }
-                                                    ?>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th>
-                                       <div class="div-group">
-                                            <button class="btn btn-print" onclick="window.print()">Print</button>
-                                       </div>                     
-                                    </th>
-                                </tr>
-                                <tr>
                                     <th>
                                         Name         
-                                    </th>
-                                    <th>
-                                        Day        
                                     </th>
                                     <th>
                                         Work In
@@ -360,10 +297,7 @@ if ($staffID && $fromDate && $toDate) {
                                             ?>
                                             <tr>
                                                 <td>
-                                                <?php echo htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?>
-                                                </td>
-                                                <td>
-                                                <?php echo date('l', strtotime($row['work_date'])); ?>
+                                                    <?php echo htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?>
                                                 </td>
                                                 <td>
                                                     <?php echo htmlspecialchars(formatTime($row['work_in'])); ?>
@@ -389,7 +323,7 @@ if ($staffID && $fromDate && $toDate) {
                                 } else {
                                     ?>
                                     <tr>
-                                        <td class="redText" colspan="5">
+                                        <td class="redText" colspan="4">
                                             <div class="div-group">
                                                 <strong>No Records Found</strong>
                                             </div>
@@ -483,12 +417,12 @@ if ($staffID && $fromDate && $toDate) {
                                                     <?php echo date('l', strtotime($row['work_date'])); ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo date('H:i', strtotime($row['work_in'])); ?>
+                                                    <?php echo htmlspecialchars(formatTime($row['work_in'])); ?>
                                                 </td>
                                                 <td>
                                                     <?php
                                                         if ($row['work_off']) {
-                                                            echo date('H:i', strtotime($row['work_off'])); 
+                                                            echo htmlspecialchars(formatTime($row['work_off']));
                                                         }
                                                     ?>
                                                 </td>

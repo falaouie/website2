@@ -131,9 +131,9 @@ select {
   display: inline-block;
   text-align: center;
   min-width: 100px;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* text-overflow: ellipsis; */
 }
 
 .btn-primary {

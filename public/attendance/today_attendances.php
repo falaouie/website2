@@ -108,7 +108,7 @@ $current_time = date('H:i:s');
           <thead>
               <tr>
                   <th colspan='6'>
-                    <div id="clock" style="font-size: 2em; font-family: monospace;"></div>
+                    <div id="clock">&nbsp;</div>
                   </th>
               </tr>
               <tr>
