@@ -61,6 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['staffID'])) {
         $_SESSION['staffID'] = $_POST['staffID'];
         $staffID = $_SESSION['staffID'];
+        if ($staffID == 'allStaff') {
+            $toDate = $fromDate;
+        }
     }
 
 }
@@ -105,6 +108,10 @@ if ($staffID && $fromDate && $toDate) {
             align-items: center; /* Vertically centers the content */
             justify-content: center; /* Horizontally centers the content */
             margin-left: 10px;
+        }
+
+        .div-item-hidden {
+            display: none;
         }
 
         /* Style for the schedule options */
@@ -199,12 +206,17 @@ if ($staffID && $fromDate && $toDate) {
                 </div>
 
                 <div class="div-group">
+
+                    <div id="allStaffDiv" class="div-item-hidden">
+                        <label for="fromDate">Date</label>
+                        <input type="date" name="fromDate" id="fromDate" value="<?php echo isset($_SESSION['fromDate']) ? $fromDate : $today; ?>" required>
+                    </div>
                     
-                    <div class="div-item">
+                    <div id="fromDateDiv" class="div-item-hidden">
                         <label for="fromDate">From</label>
                         <input type="date" name="fromDate" id="fromDate" value="<?php echo isset($_SESSION['fromDate']) ? $fromDate : $today; ?>" required>
                     </div>
-                    <div class="div-item">
+                    <div id="toDateDiv" class="div-item-hidden">
                         <label for="toDate">To</label>
                         <input type="date" name="toDate" id="toDate" value="<?php echo isset($_SESSION['toDate']) ? $toDate : $today; ?>" required>
                     </div>
@@ -324,9 +336,10 @@ if ($staffID && $fromDate && $toDate) {
                             </tbody>
                         </table>
                         <?php 
-                    } else {
-                        echo 'list each staff with date range or list dates with attendance staff ???';
-                    }
+                    } 
+                    // else { // when you apply a range of dates for all staff, remove javascript manipulations
+                    //     echo 'list each staff with date range or list dates with attendance staff ???';
+                    // }
                     
                 } elseif ($staffID != 'allStaff' && $attendanceList) {
                     ?>
@@ -476,7 +489,9 @@ if ($staffID && $fromDate && $toDate) {
         const selectStaffInput = document.getElementById('select_staff');
         const hiddenStaffIdInput = document.getElementById('selected_staff_id');
         const dataList = document.getElementById('selectStaff');
-
+        const allStaffDiv = document.getElementById('allStaffDiv');
+        const fromDateDiv = document.getElementById('fromDateDiv');
+        const toDateDiv = document.getElementById('toDateDiv');
         // Event listener for when the user selects a staff from the datalist
         selectStaffInput.addEventListener('input', function() {
             const inputValue = selectStaffInput.value;
@@ -488,7 +503,17 @@ if ($staffID && $fromDate && $toDate) {
             if (inputValue === "All Staff") {
                 // Set the hidden field to "All" when "All Staff" is selected
                 hiddenStaffIdInput.value = "allStaff";
+                // show Date field for all staff
+                allStaffDiv.className = "div-item";
+                // hide from and to date fields of single staff selection
+                fromDateDiv.className = "div-item-hidden";
+                toDateDiv.className = "div-item-hidden";
             } else {
+                // hide Date field for all staff
+                allStaffDiv.className = "div-item-hidden";
+                // show from and to date fields of single staff selection
+                fromDateDiv.className = "div-item";
+                toDateDiv.className = "div-item";
                 // Loop through options and find the matching staff name
                 for (let i = 0; i < dataList.options.length; i++) {
                     if (dataList.options[i].value === inputValue) {
@@ -518,7 +543,7 @@ if ($staffID && $fromDate && $toDate) {
 
             // Check if fromDate is greater than toDate
             if (fromDateObj > toDateObj) {
-                alert("'From' date must be less than or equal to 'To' date.");
+                alert("'To' date. Cannot be less Than From Date or Greater than Today's date");
                 event.preventDefault(); // Prevent form submission
             }
         });
