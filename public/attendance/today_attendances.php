@@ -226,8 +226,8 @@ $current_time = date('H:i:s');
                             <!-- Work Off -->
                             
                             <?php
-                                if (!empty($attendance['work_off']) && ($schedule['end_time'] != 'OPEN' || $schedule['end_time'] != 'DAY OFF')) {
-                                    if ($schedule['open_schedule'] != 1) {
+                                if (!empty($attendance['work_off']) && ($schedule['open_schedule'] != 1 || $schedule['day_off'] != 1)) {
+                                    if ($schedule['open_schedule'] != 1 && $schedule['day_off'] != 1) {
                                         if ((strtotime('+1 minute', strtotime($schedule['end_time'])) > strtotime($attendance['work_off'])) && $schedule['open_schedule'] != 1) {
                                             ?>
                                             <td class="redText">
