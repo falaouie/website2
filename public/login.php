@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!validateCSRFToken($_POST['csrf_token'])) {
 
-        $error = "Invalid request";
+        $error = "Session expired please try again";
 
     } else {
 
